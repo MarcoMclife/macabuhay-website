@@ -193,7 +193,8 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
     getAuth, signInWithEmailAndPassword,
-    GoogleAuthProvider, OAuthProvider, signInWithPopup
+    GoogleAuthProvider, OAuthProvider,
+    signInWithRedirect, getRedirectResult
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, setDoc, serverTimestamp
@@ -222,6 +223,7 @@
     ['btn-email','btn-google','btn-microsoft'].forEach(id => {
       document.getElementById(id).disabled = loading;
     });
+    if (loading) showMsg('Signing in…', 'info');
   }
 
   async function handleUser(user) {
@@ -229,7 +231,6 @@
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
-      // New user — create pending record
       await setDoc(ref, {
         uid: user.uid,
         email: user.email,
@@ -238,7 +239,7 @@
         role: 'pending',
         createdAt: serverTimestamp()
       });
-      showMsg('Your request has been submitted. Please wait for admin approval to access the family portal.', 'pending');
+      showMsg('Your request has been submitted. Please wait for admin approval.', 'pending');
       setLoading(false);
       return;
     }
@@ -254,14 +255,22 @@
       setLoading(false);
       return;
     }
-    if (data.role === 'admin') {
-      window.location.href = 'admin.html';
-      return;
+    if (data.role === 'admin') { window.location.href = 'admin.html'; return; }
+    if (data.role === 'member') { window.location.href = 'family.html'; return; }
+  }
+
+  // Handle redirect result on page load (Google/Microsoft come back here)
+  setLoading(true);
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      await handleUser(result.user);
+    } else {
+      setLoading(false);
     }
-    if (data.role === 'member') {
-      window.location.href = 'family.html';
-      return;
-    }
+  } catch (e) {
+    showMsg('Sign-in failed. Please try again.', 'error');
+    setLoading(false);
   }
 
   window.signInEmail = async function() {
@@ -286,35 +295,16 @@
   };
 
   window.signInGoogle = async function() {
-    setLoading(true);
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      await handleUser(result.user);
-    } catch (e) {
-      if (e.code !== 'auth/popup-closed-by-user') {
-        showMsg('Google sign-in failed. Please try again.', 'error');
-      }
-      setLoading(false);
-    }
+    const provider = new GoogleAuthProvider();
+    await signInWithRedirect(auth, provider);
   };
 
   window.signInMicrosoft = async function() {
-    setLoading(true);
-    try {
-      const provider = new OAuthProvider('microsoft.com');
-      provider.setCustomParameters({ prompt: 'select_account' });
-      const result = await signInWithPopup(auth, provider);
-      await handleUser(result.user);
-    } catch (e) {
-      if (e.code !== 'auth/popup-closed-by-user') {
-        showMsg('Microsoft sign-in failed. Please try again.', 'error');
-      }
-      setLoading(false);
-    }
+    const provider = new OAuthProvider('microsoft.com');
+    provider.setCustomParameters({ prompt: 'select_account' });
+    await signInWithRedirect(auth, provider);
   };
 
-  // Enter key on password field
   document.getElementById('password').addEventListener('keydown', e => {
     if (e.key === 'Enter') window.signInEmail();
   });
