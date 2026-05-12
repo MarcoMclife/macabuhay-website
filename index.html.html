@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macabuhay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: #faf8f5;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    #splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #faf8f5;
+      z-index: 9999;
+      transition: opacity 0.8s ease;
+    }
+
+    #splash.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #logo-video {
+      max-width: min(560px, 88vw);
+      width: 100%;
+      display: block;
+    }
+
+    #enter-btn {
+      margin-top: 24px;
+      padding: 11px 48px;
+      background: transparent;
+      border: 0.5px solid #1a1a1a;
+      color: #1a1a1a;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.8s ease, transform 0.8s ease, background 0.3s, color 0.3s;
+    }
+
+    #enter-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #enter-btn:hover {
+      background: #1a1a1a;
+      color: #faf8f5;
+    }
+
+    #main-site {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #main-site.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="splash">
+    <video id="logo-video" autoplay muted playsinline>
+      <source src="https://macabuhaymedia.blob.core.windows.net/media/Macabuhay%20Animated%20Logo.mp4" type="video/mp4">
+    </video>
+    <button id="enter-btn" onclick="enterSite()">Enter</button>
+  </div>
+
+  <div id="main-site">
+    <!-- Your main website content goes here -->
+    <p style="font-family:'Cormorant Garamond',serif; color:#888; letter-spacing:0.2em; text-transform:uppercase; font-size:14px;">Welcome to Macabuhay</p>
+  </div>
+
+  <script>
+    const video = document.getElementById('logo-video');
+    const btn = document.getElementById('enter-btn');
+    const splash = document.getElementById('splash');
+    const main = document.getElementById('main-site');
+
+    // Show Enter button when video ends
+    video.addEventListener('ended', () => {
+      btn.classList.add('visible');
+    });
+
+    // Fallback: show Enter button after 10 seconds if video doesn't fire ended event
+    setTimeout(() => {
+      btn.classList.add('visible');
+    }, 10000);
+
+    function enterSite() {
+      splash.classList.add('fade-out');
+      setTimeout(() => {
+        splash.style.display = 'none';
+        main.classList.add('active');
+      }, 800);
+    }
+  </script>
+
+</body>
+</html>
