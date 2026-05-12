@@ -260,17 +260,14 @@
   }
 
   // Handle redirect result on page load (Google/Microsoft come back here)
-  setLoading(true);
   try {
     const result = await getRedirectResult(auth);
     if (result && result.user) {
+      setLoading(true);
       await handleUser(result.user);
-    } else {
-      setLoading(false);
     }
   } catch (e) {
     showMsg('Sign-in failed. Please try again.', 'error');
-    setLoading(false);
   }
 
   window.signInEmail = async function() {
