@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macabuhay — Family</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2; --cream2: #f3ede3;
+    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
+    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
+    --border: rgba(180,150,100,0.2);
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); font-family: 'EB Garamond', serif; color: var(--ink); }
+
+  #auth-guard {
+    position: fixed; inset: 0; background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; letter-spacing: 0.15em; color: var(--ink-lt);
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(250,247,242,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500;
+    color: var(--ink); letter-spacing: 0.05em; text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 28px; align-items: center; list-style: none; }
+  .nav-links a {
+    font-family: 'Cormorant Garamond', serif; font-size: 13px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-lt); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-user {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--ink-lt);
+  }
+  .nav-user .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--cream2); border: 1px solid var(--tan);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--gold-dk); font-weight: 500;
+    overflow: hidden;
+  }
+  .nav-user .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .btn-signout {
+    padding: 7px 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--ink-lt);
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-signout:hover { border-color: var(--tan); color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    min-height: 60vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 140px 40px 60px;
+    position: relative;
+  }
+  .hero::after {
+    content: ''; position: absolute;
+    top: 100px; left: 48px; right: 48px; bottom: 24px;
+    border: 1px solid var(--border); pointer-events: none;
+  }
+  .hero-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px;
+    letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 16px; opacity: 0; animation: riseIn 0.8s ease forwards 0.2s;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 8vw, 80px); font-weight: 300;
+    line-height: 1; color: var(--ink);
+    opacity: 0; animation: riseIn 0.8s ease forwards 0.4s;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-dk); }
+  .hero-welcome {
+    margin-top: 20px; font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-style: italic; color: var(--ink-lt);
+    opacity: 0; animation: riseIn 0.8s ease forwards 0.6s;
+  }
+
+  /* SECTIONS */
+  .section-wrap { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px;
+    letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 4vw, 48px); font-weight: 300;
+    color: var(--ink); line-height: 1.1; margin-bottom: 24px;
+  }
+  .section-title em { font-style: italic; color: var(--gold-dk); }
+  .section-divider { width: 48px; height: 1px; background: var(--gold); margin: 0 0 32px; }
+
+  /* GALLERY */
+  #gallery { border-top: 1px solid var(--border); }
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px;
+  }
+  .gallery-item {
+    background: var(--cream2); border: 1px solid var(--border);
+    aspect-ratio: 4/3; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; transition: border-color 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .gallery-item:first-child { grid-column: span 2; aspect-ratio: 16/9; }
+  .gallery-item:hover { border-color: var(--tan); transform: translateY(-2px); }
+  .gallery-icon { font-size: 24px; color: var(--tan); }
+  .gallery-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-lt);
+  }
+  .gallery-hover {
+    position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    opacity: 0; background: rgba(250,247,242,0.92); transition: opacity 0.3s;
+    font-family: 'Cormorant Garamond', serif; font-size: 12px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+  }
+  .gallery-item:hover .gallery-hover { opacity: 1; }
+
+  /* MEMBERS */
+  #members { border-top: 1px solid var(--border); background: var(--cream2); }
+  .members-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px; margin-top: 40px;
+  }
+  .member-card {
+    background: var(--cream); border: 1px solid var(--border);
+    padding: 32px 20px; text-align: center;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .member-card:hover { border-color: var(--tan); transform: translateY(-3px); }
+  .member-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--cream2); border: 2px solid var(--tan);
+    margin: 0 auto 14px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold-dk);
+    overflow: hidden;
+  }
+  .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .member-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 18px;
+    font-weight: 400; color: var(--ink); margin-bottom: 4px;
+  }
+  .member-role {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-lt);
+  }
+
+  /* EVENTS */
+  #events { border-top: 1px solid var(--border); }
+  .events-list { margin-top: 32px; }
+  .event-item {
+    display: grid; grid-template-columns: 72px 1fr auto;
+    gap: 24px; align-items: center; padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .event-item:first-child { border-top: 1px solid var(--border); }
+  .event-date {
+    text-align: center; background: var(--cream2);
+    border: 1px solid var(--border); padding: 8px;
+  }
+  .event-month {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); display: block;
+  }
+  .event-day {
+    font-family: 'Cormorant Garamond', serif; font-size: 28px;
+    font-weight: 300; color: var(--ink); line-height: 1; display: block;
+  }
+  .event-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 20px;
+    font-weight: 400; color: var(--ink); margin-bottom: 4px;
+  }
+  .event-desc {
+    font-family: 'Cormorant Garamond', serif; font-size: 13px;
+    color: var(--ink-lt); font-style: italic;
+  }
+  .event-tag {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid var(--tan); padding: 4px 10px; white-space: nowrap;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border); padding: 40px;
+    text-align: center; background: var(--cream2);
+  }
+  .footer-script {
+    font-family: 'Cormorant Garamond', serif; font-size: 30px;
+    font-weight: 300; font-style: italic; color: var(--gold-dk); margin-bottom: 6px;
+  }
+  .footer-copy {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    color: var(--tan); letter-spacing: 0.1em;
+  }
+
+  @keyframes riseIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .section-wrap { padding: 56px 20px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-item:first-child { grid-column: span 2; }
+    .hero::after { display: none; }
+    .event-item { grid-template-columns: 60px 1fr; }
+    .event-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="auth-guard">Verifying access…</div>
+
+<nav id="main-nav" style="display:none">
+  <a href="index.html" class="nav-logo">Macabuhay</a>
+  <ul class="nav-links">
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#members">Family</a></li>
+    <li><a href="#events">Events</a></li>
+  </ul>
+  <div class="nav-user">
+    <div class="avatar" id="user-avatar">?</div>
+    <span id="user-name"></span>
+    <button class="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+</nav>
+
+<div id="main-content" style="display:none">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-label">Private — Family Members</div>
+    <h1 class="hero-title">Welcome,<br><em>Family</em></h1>
+    <p class="hero-welcome" id="hero-welcome">You are home.</p>
+  </div>
+
+  <!-- GALLERY -->
+  <div id="gallery">
+    <div class="section-wrap">
+      <div class="section-label">Memories</div>
+      <h2 class="section-title"><em>Our</em> Gallery</h2>
+      <div class="section-divider"></div>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <div class="gallery-icon">&#9670;</div>
+          <div class="gallery-label">Featured Photo</div>
+          <div class="gallery-hover">+ Add Photo</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-icon">&#9670;</div>
+          <div class="gallery-label">Memory</div>
+          <div class="gallery-hover">+ Add Photo</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-icon">&#9670;</div>
+          <div class="gallery-label">Memory</div>
+          <div class="gallery-hover">+ Add Photo</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-icon">&#9670;</div>
+          <div class="gallery-label">Memory</div>
+          <div class="gallery-hover">+ Add Photo</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-icon">&#9670;</div>
+          <div class="gallery-label">Memory</div>
+          <div class="gallery-hover">+ Add Photo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERS -->
+  <div id="members">
+    <div class="section-wrap">
+      <div class="section-label">The Family</div>
+      <h2 class="section-title">Our <em>People</em></h2>
+      <div class="section-divider"></div>
+      <div class="members-grid" id="members-grid">
+        <div class="member-card">
+          <div class="member-avatar">M</div>
+          <div class="member-name">Marco</div>
+          <div class="member-role">Admin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENTS -->
+  <div id="events">
+    <div class="section-wrap">
+      <div class="section-label">Calendar</div>
+      <h2 class="section-title">Events &amp; <em>Milestones</em></h2>
+      <div class="section-divider"></div>
+      <div class="events-list">
+        <div class="event-item">
+          <div class="event-date">
+            <span class="event-month">May</span>
+            <span class="event-day">12</span>
+          </div>
+          <div>
+            <div class="event-title">Website Launch</div>
+            <div class="event-desc">The Macabuhay Family Website goes live — Version 1.0</div>
+          </div>
+          <div class="event-tag">Milestone</div>
+        </div>
+        <div class="event-item">
+          <div class="event-date">
+            <span class="event-month">—</span>
+            <span class="event-day" style="font-size:16px;line-height:2.2;">TBD</span>
+          </div>
+          <div>
+            <div class="event-title">Add an Event</div>
+            <div class="event-desc">Birthdays, reunions, and celebrations</div>
+          </div>
+          <div class="event-tag">Upcoming</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-script">Macabuhay</div>
+    <div class="footer-copy">&copy; 2026 The Macabuhay Family &nbsp;·&nbsp; Private</div>
+  </footer>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDFm6zKz-GFfwN2ctWoEsCjTpir7B22scI",
+    authDomain: "macabuhay-website.firebaseapp.com",
+    projectId: "macabuhay-website",
+    storageBucket: "macabuhay-website.firebasestorage.app",
+    messagingSenderId: "464926995204",
+    appId: "1:464926995204:web:a3f4c16900fa77edee9651"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) { window.location.href = 'login.html'; return; }
+
+    const data = snap.data();
+    if (data.role !== 'member' && data.role !== 'admin') {
+      window.location.href = 'login.html'; return;
+    }
+
+    // Show content
+    document.getElementById('auth-guard').style.display = 'none';
+    document.getElementById('main-nav').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'block';
+
+    // Set user info in nav
+    const name = user.displayName || user.email.split('@')[0];
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('hero-welcome').textContent = `Welcome back, ${name.split(' ')[0]}.`;
+
+    const avatarEl = document.getElementById('user-avatar');
+    if (user.photoURL) {
+      avatarEl.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+    } else {
+      avatarEl.textContent = name.charAt(0).toUpperCase();
+    }
+
+    // Load family members
+    try {
+      const q = query(collection(db, 'users'), where('role', 'in', ['member', 'admin']));
+      const members = await getDocs(q);
+      const grid = document.getElementById('members-grid');
+      grid.innerHTML = '';
+      members.forEach(m => {
+        const d = m.data();
+        const initials = (d.displayName || d.email || '?').charAt(0).toUpperCase();
+        const avatar = d.photoURL
+          ? `<div class="member-avatar"><img src="${d.photoURL}" alt="${d.displayName}"></div>`
+          : `<div class="member-avatar">${initials}</div>`;
+        grid.innerHTML += `
+          <div class="member-card">
+            ${avatar}
+            <div class="member-name">${d.displayName || d.email.split('@')[0]}</div>
+            <div class="member-role">${d.role === 'admin' ? 'Admin' : 'Family Member'}</div>
+          </div>`;
+      });
+    } catch(e) { console.log('Could not load members', e); }
+  });
+
+  window.signOut = async function() {
+    await fbSignOut(auth);
+    window.location.href = 'index.html';
+  };
+</script>
+</body>
+</html>

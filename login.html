@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macabuhay — Family Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2; --cream2: #f3ede3;
+    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
+    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
+    --border: rgba(180,150,100,0.2);
+    --error: #c0392b;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--cream2); font-family: 'EB Garamond', serif;
+    color: var(--ink); min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .login-wrap {
+    width: 100%; max-width: 440px;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: var(--cream); border: 1px solid var(--border);
+    padding: 52px 44px;
+  }
+
+  .login-logo {
+    text-align: center; margin-bottom: 36px;
+  }
+
+  .login-logo .script {
+    font-family: 'Cormorant Garamond', serif; font-size: 42px;
+    font-weight: 300; font-style: italic; color: var(--gold-dk); line-height: 1;
+    display: block;
+  }
+
+  .login-logo .rule {
+    width: 40px; height: 1px; background: var(--tan); margin: 12px auto;
+  }
+
+  .login-logo .tagline {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-lt);
+  }
+
+  .login-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px;
+    font-weight: 400; color: var(--ink); text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .form-group { margin-bottom: 20px; }
+
+  label {
+    display: block; font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-lt); margin-bottom: 8px;
+  }
+
+  input[type="email"], input[type="password"] {
+    width: 100%; padding: 12px 16px;
+    background: var(--cream2); border: 1px solid var(--border);
+    font-family: 'EB Garamond', serif; font-size: 16px; color: var(--ink);
+    outline: none; transition: border-color 0.2s;
+  }
+
+  input:focus { border-color: var(--tan); }
+
+  .btn-signin {
+    width: 100%; padding: 14px;
+    background: var(--ink); color: var(--cream);
+    font-family: 'Cormorant Garamond', serif; font-size: 13px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    border: none; cursor: pointer; margin-top: 8px;
+    transition: background 0.3s;
+  }
+  .btn-signin:hover { background: var(--gold-dk); }
+  .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 28px 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .divider span {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-lt);
+  }
+
+  .btn-social {
+    width: 100%; padding: 13px 16px; margin-bottom: 12px;
+    background: transparent; border: 1px solid var(--border);
+    font-family: 'Cormorant Garamond', serif; font-size: 13px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-social:hover { border-color: var(--tan); background: var(--cream2); }
+  .btn-social:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-social svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .msg {
+    padding: 12px 16px; margin-bottom: 20px;
+    font-family: 'Cormorant Garamond', serif; font-size: 14px;
+    display: none;
+  }
+  .msg.error { background: #fdf0ef; border: 1px solid #e8b4b0; color: var(--error); display: block; }
+  .msg.info { background: #f0f7ed; border: 1px solid #b4d4a8; color: #2d6e1f; display: block; }
+  .msg.pending { background: #faf5e8; border: 1px solid #d4c07a; color: #7a6020; display: block; }
+
+  .back-link {
+    display: block; text-align: center; margin-top: 24px;
+    font-family: 'Cormorant Garamond', serif; font-size: 13px;
+    font-style: italic; color: var(--ink-lt); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  .loader {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <span class="script">Macabuhay</span>
+      <div class="rule"></div>
+      <div class="tagline">Family Portal</div>
+    </div>
+
+    <div class="login-title">Welcome back</div>
+
+    <div id="msg" class="msg"></div>
+
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="btn-signin" id="btn-email" onclick="signInEmail()">Sign In</button>
+
+    <div class="divider"><span>or continue with</span></div>
+
+    <button class="btn-social" id="btn-google" onclick="signInGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Sign in with Google
+    </button>
+
+    <button class="btn-social" id="btn-microsoft" onclick="signInMicrosoft()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.4 2H2v9.4h9.4V2z" fill="#F25022"/>
+        <path d="M22 2h-9.4v9.4H22V2z" fill="#7FBA00"/>
+        <path d="M11.4 12.6H2V22h9.4v-9.4z" fill="#00A4EF"/>
+        <path d="M22 12.6h-9.4V22H22v-9.4z" fill="#FFB900"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+
+    <a href="index.html" class="back-link">← Back to homepage</a>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword,
+    GoogleAuthProvider, OAuthProvider, signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDFm6zKz-GFfwN2ctWoEsCjTpir7B22scI",
+    authDomain: "macabuhay-website.firebaseapp.com",
+    projectId: "macabuhay-website",
+    storageBucket: "macabuhay-website.firebasestorage.app",
+    messagingSenderId: "464926995204",
+    appId: "1:464926995204:web:a3f4c16900fa77edee9651"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  function setLoading(loading) {
+    ['btn-email','btn-google','btn-microsoft'].forEach(id => {
+      document.getElementById(id).disabled = loading;
+    });
+  }
+
+  async function handleUser(user) {
+    const ref = doc(db, 'users', user.uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      // New user — create pending record
+      await setDoc(ref, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || '',
+        role: 'pending',
+        createdAt: serverTimestamp()
+      });
+      showMsg('Your request has been submitted. Please wait for admin approval to access the family portal.', 'pending');
+      setLoading(false);
+      return;
+    }
+
+    const data = snap.data();
+    if (data.role === 'pending') {
+      showMsg('Your access request is pending approval. Please check back later.', 'pending');
+      setLoading(false);
+      return;
+    }
+    if (data.role === 'denied') {
+      showMsg('Your access request was not approved. Please contact the family administrator.', 'error');
+      setLoading(false);
+      return;
+    }
+    if (data.role === 'admin') {
+      window.location.href = 'admin.html';
+      return;
+    }
+    if (data.role === 'member') {
+      window.location.href = 'family.html';
+      return;
+    }
+  }
+
+  window.signInEmail = async function() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) { showMsg('Please enter your email and password.', 'error'); return; }
+    setLoading(true);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await handleUser(result.user);
+    } catch (e) {
+      const msgs = {
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+        'auth/invalid-credential': 'Invalid email or password.'
+      };
+      showMsg(msgs[e.code] || 'Sign in failed. Please try again.', 'error');
+      setLoading(false);
+    }
+  };
+
+  window.signInGoogle = async function() {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      await handleUser(result.user);
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') {
+        showMsg('Google sign-in failed. Please try again.', 'error');
+      }
+      setLoading(false);
+    }
+  };
+
+  window.signInMicrosoft = async function() {
+    setLoading(true);
+    try {
+      const provider = new OAuthProvider('microsoft.com');
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const result = await signInWithPopup(auth, provider);
+      await handleUser(result.user);
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') {
+        showMsg('Microsoft sign-in failed. Please try again.', 'error');
+      }
+      setLoading(false);
+    }
+  };
+
+  // Enter key on password field
+  document.getElementById('password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.signInEmail();
+  });
+</script>
+</body>
+</html>
