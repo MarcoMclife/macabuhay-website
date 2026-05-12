@@ -178,6 +178,7 @@
 
   // Handle redirect result on page load
   auth.getRedirectResult().then(function(result) {
+    console.log("Redirect result:", JSON.stringify(result ? {user: result.user ? result.user.email : null} : null));
     if (result && result.user) {
       showMsg('Signing in...', 'info');
       setLoading(true);
@@ -185,7 +186,8 @@
     }
   }).catch(function(e) {
     if (e.code !== 'auth/cancelled-popup-request') {
-      showMsg('Sign-in failed: ' + e.message, 'error');
+      showMsg("Sign-in failed: " + e.code + " - " + e.message, "error");
+    console.log("Redirect error:", e.code, e.message);
     }
   });
 
