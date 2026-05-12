@@ -146,10 +146,14 @@
   }
 
   function handleUser(user) {
+    console.log("handleUser called for:", user.email, "uid:", user.uid);
+    showMsg('Checking access...', 'info');
     var ref = db.collection('users').doc(user.uid);
-    return ref.get().then(function(snap) {
+    ref.get().then(function(snap) {
+      console.log("Firestore snap exists:", snap.exists);
       if (!snap.exists) {
-        return ref.set({
+        console.log("No document found, creating pending record");
+        ref.set({
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || '',
@@ -159,35 +163,42 @@
         }).then(function() {
           showMsg('Your request has been submitted. Please wait for admin approval.', 'pending');
           setLoading(false);
+        }).catch(function(e) {
+          console.log("Error creating record:", e);
+          showMsg('Error: ' + e.message, 'error');
+          setLoading(false);
         });
+        return;
       }
       var data = snap.data();
+      console.log("User role:", data.role);
+      showMsg('Role: ' + data.role + ' — redirecting...', 'info');
       if (data.role === 'pending') {
-        showMsg('Your access request is pending approval. Please check back later.', 'pending');
+        showMsg('Your access request is pending approval.', 'pending');
         setLoading(false);
       } else if (data.role === 'denied') {
-        showMsg('Your access was not approved. Please contact the family administrator.', 'error');
+        showMsg('Your access was not approved.', 'error');
         setLoading(false);
       } else if (data.role === 'admin') {
-        window.location.href = 'admin.html';
+        setTimeout(function() { window.location.href = 'admin.html'; }, 500);
       } else if (data.role === 'member') {
-        window.location.href = 'family.html';
+        setTimeout(function() { window.location.href = 'family.html'; }, 500);
+      } else {
+        showMsg('Unknown role: ' + data.role, 'error');
+        setLoading(false);
       }
+    }).catch(function(e) {
+      console.log("Firestore error:", e.code, e.message);
+      showMsg('Database error: ' + e.code + ' - ' + e.message, 'error');
+      setLoading(false);
     });
   }
 
-  // Handle redirect result on page load
-  auth.getRedirectResult().then(function(result) {
-    console.log("Redirect result:", JSON.stringify(result ? {user: result.user ? result.user.email : null} : null));
-    if (result && result.user) {
-      showMsg('Signing in...', 'info');
-      setLoading(true);
-      handleUser(result.user);
-    }
-  }).catch(function(e) {
-    if (e.code !== 'auth/cancelled-popup-request') {
-      showMsg("Sign-in failed: " + e.code + " - " + e.message, "error");
-    console.log("Redirect error:", e.code, e.message);
+  // Listen for auth state
+  auth.onAuthStateChanged(function(user) {
+    console.log("onAuthStateChanged fired, user:", user ? user.email : "null");
+    if (user) {
+      handleUser(user);
     }
   });
 
@@ -213,13 +224,25 @@
 
   function signInGoogle() {
     var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
+    auth.signInWithPopup(provider).catch(function(e) {
+      if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+        auth.signInWithRedirect(provider);
+      } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+        showMsg('Google sign-in failed: ' + e.message, 'error');
+      }
+    });
   }
 
   function signInMicrosoft() {
     var provider = new firebase.auth.OAuthProvider('microsoft.com');
     provider.setCustomParameters({ prompt: 'select_account' });
-    auth.signInWithRedirect(provider);
+    auth.signInWithPopup(provider).catch(function(e) {
+      if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+        auth.signInWithRedirect(provider);
+      } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+        showMsg('Microsoft sign-in failed: ' + e.message, 'error');
+      }
+    });
   }
 
   document.getElementById('password').addEventListener('keydown', function(e) {
