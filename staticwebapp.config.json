@@ -1,0 +1,128 @@
+{
+  "auth": {
+    "rolesSource": "/api/GetRoles",
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "userDetailsClaim": "preferred_username",
+        "registration": {
+          "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
+          "clientIdSettingName": "MICROSOFT_CLIENT_ID",
+          "clientSecretSettingName": "MICROSOFT_CLIENT_SECRET"
+        },
+        "login": {
+          "loginParameters": [
+            "scope=openid profile email",
+            "prompt=select_account"
+          ]
+        }
+      },
+      "customOpenIdConnectProviders": {
+        "family": {
+          "registration": {
+            "clientIdSettingName": "FAMILY_ID_CLIENT_ID",
+            "clientCredential": {
+              "clientSecretSettingName": "FAMILY_ID_CLIENT_SECRET"
+            },
+            "openIdConnectConfiguration": {
+              "wellKnownOpenIdConfiguration": "https://REPLACE_TENANT_SUBDOMAIN.ciamlogin.com/REPLACE_TENANT_ID/v2.0/.well-known/openid-configuration"
+            }
+          },
+          "login": {
+            "nameClaimType": "name",
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "routes": [
+    {
+      "route": "/.auth/login/github",
+      "statusCode": 404
+    },
+    {
+      "route": "/.auth/login/twitter",
+      "statusCode": 404
+    },
+    {
+      "route": "/admin.html",
+      "allowedRoles": [
+        "admin"
+      ]
+    },
+    {
+      "route": "/admin",
+      "allowedRoles": [
+        "admin"
+      ]
+    },
+    {
+      "route": "/family.html",
+      "allowedRoles": [
+        "member",
+        "admin"
+      ]
+    },
+    {
+      "route": "/family",
+      "allowedRoles": [
+        "member",
+        "admin"
+      ]
+    },
+    {
+      "route": "/api/GetRoles",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/admin/*",
+      "allowedRoles": [
+        "admin"
+      ]
+    },
+    {
+      "route": "/api/family/*",
+      "allowedRoles": [
+        "member",
+        "admin"
+      ]
+    },
+    {
+      "route": "/api/me",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=604800"
+      }
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "redirect": "/login.html",
+      "statusCode": 302
+    },
+    "403": {
+      "redirect": "/login.html?check=1",
+      "statusCode": 302
+    }
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Frame-Options": "DENY",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "platform": {
+    "apiRuntime": "node:20"
+  }
+}

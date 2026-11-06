@@ -1,0 +1,14 @@
+{
+  "name": "macabuhay-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Azure Functions API for themacabuhay.com (members and roles)",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.3.0",
+    "@azure/functions": "^4.6.0"
+  }
+}
