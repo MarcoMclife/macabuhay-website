@@ -4,6 +4,7 @@ const { app } = require('@azure/functions');
 const principal = require('../lib/principal');
 const members = require('../lib/members');
 const { defaultStore } = require('../lib/store');
+const { inviteGuest } = require('../lib/invite');
 
 const json = (status, body) => ({
   status,
@@ -89,7 +90,17 @@ register('adminMembersAdd', {
   route: 'admin/members/add',
   handler: guarded('admin', async (req, user, store) => {
     const body = await req.json().catch(() => ({}));
-    return json(200, await members.addMember(store, user.email, body.email, body.role, body.name));
+    const saved = await members.addMember(store, user.email, body.email, body.role, body.name);
+    // Only approved roles get an Entra invitation; re-adding someone re-sends it.
+    let invite = { sent: false, reason: 'not-needed' };
+    if (saved.role === 'member' || saved.role === 'admin') {
+      try {
+        invite = await inviteGuest({ email: saved.email, name: saved.name });
+      } catch (e) {
+        invite = { sent: false, reason: 'error', message: e.message };
+      }
+    }
+    return json(200, { ...saved, invite });
   }),
 });
 

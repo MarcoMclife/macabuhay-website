@@ -85,3 +85,40 @@ test('family list shows only approved members, sorted, without login metadata', 
   assert.deepEqual(list.map((m) => m.name), ['Ana', 'Zeny']);
   assert.equal(list[0].lastLoginAt, undefined);
 });
+
+test('invite: not configured -> reports so without calling Graph', async () => {
+  const { inviteGuest } = require('../src/lib/invite');
+  let called = false;
+  const r = await inviteGuest({ email: 'a@x.ph' }, { env: {}, fetchImpl: async () => { called = true; } });
+  assert.deepEqual(r, { sent: false, reason: 'not-configured' });
+  assert.equal(called, false);
+});
+
+test('invite: gets a Graph token, then posts the invitation to the site login page', async () => {
+  const { inviteGuest } = require('../src/lib/invite');
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push({ url, init });
+    if (url.includes('/oauth2/')) return { ok: true, status: 200, json: async () => ({ access_token: 'tok' }) };
+    return { ok: true, status: 201, json: async () => ({ inviteRedeemUrl: 'https://login/redeem' }) };
+  };
+  const env = { TENANT_ID: 't', MICROSOFT_CLIENT_ID: 'c', MICROSOFT_CLIENT_SECRET: 's' };
+  const r = await inviteGuest({ email: 'ana@x.ph', name: 'Ana' }, { env, fetchImpl });
+  assert.equal(r.sent, true);
+  assert.match(calls[0].url, /login\.microsoftonline\.com\/t\/oauth2\/v2\.0\/token/);
+  assert.equal(calls[1].url, 'https://graph.microsoft.com/v1.0/invitations');
+  assert.equal(calls[1].init.headers.Authorization, 'Bearer tok');
+  const body = JSON.parse(calls[1].init.body);
+  assert.equal(body.invitedUserEmailAddress, 'ana@x.ph');
+  assert.equal(body.inviteRedirectUrl, 'https://www.themacabuhay.com/login.html');
+  assert.equal(body.sendInvitationMessage, true);
+});
+
+test('invite: a Graph error becomes a readable message', async () => {
+  const { inviteGuest } = require('../src/lib/invite');
+  const fetchImpl = async (url) => url.includes('/oauth2/')
+    ? { ok: true, status: 200, json: async () => ({ access_token: 'tok' }) }
+    : { ok: false, status: 403, json: async () => ({ error: { message: 'Insufficient privileges' } }) };
+  const env = { TENANT_ID: 't', MICROSOFT_CLIENT_ID: 'c', MICROSOFT_CLIENT_SECRET: 's' };
+  await assert.rejects(inviteGuest({ email: 'a@x.ph' }, { env, fetchImpl }), /Insufficient privileges/);
+});

@@ -214,7 +214,7 @@
             </div>
             <button class="btn btn--primary" type="button" onclick="addMemberByEmail()">Add member</button>
           </div>
-          <p class="add-note">They’re let straight in when they sign in with this email address, using email, Google or Microsoft. Someone new to email sign-in chooses “Sign in with email or Google” and creates their account with this address.</p>
+          <p class="add-note">We email them an invitation from Microsoft. After accepting it, they sign in at themacabuhay.com with this address, using their Microsoft or Google account or a one-time code sent to their email. Re-add someone to resend their invitation.</p>
         </div>
       </div>
     </main>
@@ -342,7 +342,7 @@
   async function updateRole(email, role) {
     try {
       await api('admin/members/role', { email, role });
-      showToast(role === 'member' ? 'Access approved. They’ll be let in next time they sign in.' : role === 'denied' ? 'Access removed.' : 'Role updated.');
+      showToast(role === 'member' ? 'Access approved. They’re let in on their next sign-in.' : role === 'denied' ? 'Access removed.' : 'Role updated.');
       await loadUsers();
     } catch (e) {
       showToast(e.message || 'Error updating role. Please try again.');
@@ -359,7 +359,11 @@
     if (!email) { showToast('Please enter an email address.'); return; }
     try {
       const saved = await api('admin/members/add', { email, role });
-      showToast(`${saved.email} added as ${saved.role}. They can sign in now.`);
+      const inv = saved.invite || {};
+      showToast(inv.sent ? `Invitation emailed to ${saved.email}.`
+        : inv.reason === 'not-configured' ? `${saved.email} added. Send their invitation from Entra (Users → Invite external user).`
+        : inv.reason === 'error' ? `${saved.email} added, but the invitation failed: ${inv.message}`
+        : `${saved.email} saved as ${saved.role}.`);
       document.getElementById('new-email').value = '';
       await loadUsers();
     } catch (e) {

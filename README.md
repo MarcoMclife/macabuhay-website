@@ -5,7 +5,7 @@ Private family site for the Macabuhay family. Hosted on **Azure Static Web Apps*
 | Path | What it is |
 |---|---|
 | `index.html` | Public home, with the animated logo entry screen (`assets/img/macabuhay-logo.svg`) |
-| `login.html` | Sign-in (email/Google via Entra External ID, or Microsoft) and access status |
+| `login.html` | Sign-in (invited guests of the themacabuhay.com Entra tenant) and access status |
 | `family.html` | Members-only portal (Azure serves it to `member`/`admin` only) |
 | `admin.html` | Approve/deny/add members (Azure serves it to `admin` only) |
 | `assets/css/site.css` | Shared design system |

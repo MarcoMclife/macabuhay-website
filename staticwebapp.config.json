@@ -5,7 +5,7 @@
       "azureActiveDirectory": {
         "userDetailsClaim": "preferred_username",
         "registration": {
-          "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
+          "openIdIssuer": "https://login.microsoftonline.com/fe0885ef-072f-4362-819d-3fb63953823e/v2.0",
           "clientIdSettingName": "MICROSOFT_CLIENT_ID",
           "clientSecretSettingName": "MICROSOFT_CLIENT_SECRET"
         },
@@ -14,27 +14,6 @@
             "scope=openid profile email",
             "prompt=select_account"
           ]
-        }
-      },
-      "customOpenIdConnectProviders": {
-        "family": {
-          "registration": {
-            "clientIdSettingName": "FAMILY_ID_CLIENT_ID",
-            "clientCredential": {
-              "clientSecretSettingName": "FAMILY_ID_CLIENT_SECRET"
-            },
-            "openIdConnectConfiguration": {
-              "wellKnownOpenIdConfiguration": "https://REPLACE_TENANT_SUBDOMAIN.ciamlogin.com/REPLACE_TENANT_ID/v2.0/.well-known/openid-configuration"
-            }
-          },
-          "login": {
-            "nameClaimType": "name",
-            "scopes": [
-              "openid",
-              "profile",
-              "email"
-            ]
-          }
         }
       }
     }
