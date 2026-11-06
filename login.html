@@ -2,252 +2,124 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Macabuhay — Family Login</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family login — Macabuhay</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f1e6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 <style>
-  :root {
-    --cream: #faf7f2; --cream2: #f3ede3;
-    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
-    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
-    --border: rgba(180,150,100,0.2); --error: #c0392b;
+  .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100svh; }
+  .login-photo { position: relative; background: var(--g-dark); overflow: hidden; }
+  .login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .login-side { display: flex; flex-direction: column; padding: 32px var(--gut); }
+  .login-top { display: flex; justify-content: space-between; align-items: center; }
+  .login-top .script { font-size: 40px; }
+  .login-form { width: 100%; max-width: 400px; margin: auto; padding: 48px 0; display: flex; flex-direction: column; gap: 20px; }
+  .login-form h1 { font-size: clamp(36px, 2vw + 20px, 52px); }
+  .login-form .intro { color: var(--muted); font-size: 16px; margin-top: -8px; }
+  .divider { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .btn-social { gap: 12px; background: var(--g-card); }
+  .btn-social svg { width: 18px; height: 18px; flex: none; }
+  .login-foot { font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 860px) {
+    .login { grid-template-columns: 1fr; }
+    .login-photo { height: 28svh; min-height: 180px; }
+    .login-form { padding: 32px 0; }
   }
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--cream2); font-family: 'EB Garamond', serif;
-    color: var(--ink); min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .login-wrap { width: 100%; max-width: 440px; padding: 24px; }
-  .login-card { background: var(--cream); border: 1px solid var(--border); padding: 52px 44px; }
-  .login-logo { text-align: center; margin-bottom: 36px; }
-  .login-logo .script {
-    font-family: 'Cormorant Garamond', serif; font-size: 42px;
-    font-weight: 300; font-style: italic; color: var(--gold-dk); line-height: 1; display: block;
-  }
-  .login-logo .rule { width: 40px; height: 1px; background: var(--tan); margin: 12px auto; }
-  .login-logo .tagline {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-lt);
-  }
-  .login-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 22px;
-    font-weight: 400; color: var(--ink); text-align: center; margin-bottom: 32px;
-  }
-  .form-group { margin-bottom: 20px; }
-  label {
-    display: block; font-family: 'Cormorant Garamond', serif;
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink-lt); margin-bottom: 8px;
-  }
-  input[type="email"], input[type="password"] {
-    width: 100%; padding: 12px 16px;
-    background: var(--cream2); border: 1px solid var(--border);
-    font-family: 'EB Garamond', serif; font-size: 16px; color: var(--ink);
-    outline: none; transition: border-color 0.2s;
-  }
-  input:focus { border-color: var(--tan); }
-  .btn-signin {
-    width: 100%; padding: 14px; background: var(--ink); color: var(--cream);
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    border: none; cursor: pointer; margin-top: 8px; transition: background 0.3s;
-  }
-  .btn-signin:hover { background: var(--gold-dk); }
-  .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
-  .divider { display: flex; align-items: center; gap: 16px; margin: 28px 0; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .divider span {
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-lt);
-  }
-  .btn-social {
-    width: 100%; padding: 13px 16px; margin-bottom: 12px;
-    background: transparent; border: 1px solid var(--border);
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink);
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .btn-social:hover { border-color: var(--tan); background: var(--cream2); }
-  .btn-social:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn-social svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .msg { padding: 12px 16px; margin-bottom: 20px; font-family: 'Cormorant Garamond', serif; font-size: 14px; display: none; }
-  .msg.error { background: #fdf0ef; border: 1px solid #e8b4b0; color: var(--error); display: block; }
-  .msg.info { background: #f0f7ed; border: 1px solid #b4d4a8; color: #2d6e1f; display: block; }
-  .msg.pending { background: #faf5e8; border: 1px solid #d4c07a; color: #7a6020; display: block; }
-  .back-link {
-    display: block; text-align: center; margin-top: 24px;
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    font-style: italic; color: var(--ink-lt); text-decoration: none; transition: color 0.2s;
-  }
-  .back-link:hover { color: var(--gold); }
+  .signin-choices { display: flex; flex-direction: column; gap: 14px; }
+  .signin-choices[hidden] { display: none; }
+  .signin-help { font-size: var(--t-small); color: var(--muted); margin-top: 6px; }
 </style>
 </head>
 <body>
-<div class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo">
-      <span class="script">Macabuhay</span>
-      <div class="rule"></div>
-      <div class="tagline">Family Portal</div>
-    </div>
-    <div class="login-title">Welcome back</div>
-    <div id="msg" class="msg"></div>
-    <div class="form-group">
-      <label for="email">Email address</label>
-      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <button class="btn-signin" id="btn-email" onclick="signInEmail()">Sign In</button>
-    <div class="divider"><span>or continue with</span></div>
-    <button class="btn-social" id="btn-google" onclick="signInGoogle()">
-      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Sign in with Google
-    </button>
-    <button class="btn-social" id="btn-microsoft" onclick="signInMicrosoft()">
-      <svg viewBox="0 0 24 24"><path d="M11.4 2H2v9.4h9.4V2z" fill="#F25022"/><path d="M22 2h-9.4v9.4H22V2z" fill="#7FBA00"/><path d="M11.4 12.6H2V22h9.4v-9.4z" fill="#00A4EF"/><path d="M22 12.6h-9.4V22H22v-9.4z" fill="#FFB900"/></svg>
-      Sign in with Microsoft
-    </button>
-    <a href="index.html" class="back-link">← Back to homepage</a>
+<div class="login">
+  <div class="login-photo" aria-hidden="true">
+    <!-- STAND-IN: replace with a family photograph -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/1280px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg"
+         srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/960px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg 960w,
+                 https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/1920px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg 1920w"
+         sizes="(max-width: 860px) 100vw, 50vw" alt="">
   </div>
+
+  <main class="login-side">
+    <div class="login-top">
+      <a class="brand" href="index.html" aria-label="Macabuhay home"><span class="script">Macabuhay</span></a>
+      <a class="link" href="index.html">Back to home</a>
+    </div>
+
+    <div class="login-form">
+      <div>
+        <span class="label label--gold">Family portal</span>
+      </div>
+      <h1>Welcome <em>home</em></h1>
+      <p class="intro">Sign in to see family photos, profiles and events. The family site is invitation only: use the email address your invitation was sent to.</p>
+      <div id="msg" class="msg" role="status" aria-live="polite"></div>
+      <div id="signin" class="signin-choices">
+        <a id="btn-signin" class="btn btn--primary btn--block" href="/.auth/login/aad?post_login_redirect_uri=/login.html">Sign in</a>
+        <p class="signin-help">On the next screen, type your email. Depending on your address you'll sign in with your Microsoft or Google account, or we'll email you a one-time code. There's no new password to remember.</p>
+        <p class="signin-help">Not invited yet? Ask Marco or another family admin to add your email address.</p>
+      </div>
+      <div id="signed-in" class="signin-choices" hidden>
+        <a class="btn btn--secondary btn--block" href="/.auth/logout?post_logout_redirect_uri=/login.html">Sign out</a>
+      </div>
+    </div>
+    <div class="login-foot">
+      <span>© 2026 The Macabuhay Family</span>
+      <span>Private family site · invitation only</span>
+    </div>
+  </main>
 </div>
 
 <script>
-  var firebaseConfig = {
-    apiKey: "AIzaSyDFm6zKz-GFfwN2ctWoEsCjTpir7B22scI",
-    authDomain: "macabuhay-website.firebaseapp.com",
-    projectId: "macabuhay-website",
-    storageBucket: "macabuhay-website.firebasestorage.app",
-    messagingSenderId: "464926995204",
-    appId: "1:464926995204:web:a3f4c16900fa77edee9651"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  var auth = firebase.auth();
-  var db = firebase.firestore();
-
-  function showMsg(text, type) {
-    var el = document.getElementById('msg');
-    el.textContent = text;
-    el.className = 'msg ' + type;
-  }
-
-  function setLoading(loading) {
-    ['btn-email','btn-google','btn-microsoft'].forEach(function(id) {
-      document.getElementById(id).disabled = loading;
-    });
-  }
-
-  function handleUser(user) {
-    console.log("handleUser called for:", user.email, "uid:", user.uid);
-    showMsg('Checking access...', 'info');
-    var ref = db.collection('users').doc(user.uid);
-    ref.get().then(function(snap) {
-      console.log("Firestore snap exists:", snap.exists);
-      if (!snap.exists) {
-        console.log("No document found, creating pending record");
-        ref.set({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || '',
-          photoURL: user.photoURL || '',
-          role: 'pending',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(function() {
-          showMsg('Your request has been submitted. Please wait for admin approval.', 'pending');
-          setLoading(false);
-        }).catch(function(e) {
-          console.log("Error creating record:", e);
-          showMsg('Error: ' + e.message, 'error');
-          setLoading(false);
-        });
-        return;
-      }
-      var data = snap.data();
-      console.log("User role:", data.role);
-      showMsg('Role: ' + data.role + ' — redirecting...', 'info');
-      if (data.role === 'pending') {
-        showMsg('Your access request is pending approval.', 'pending');
-        setLoading(false);
-      } else if (data.role === 'denied') {
-        showMsg('Your access was not approved.', 'error');
-        setLoading(false);
-      } else if (data.role === 'admin') {
-        setTimeout(function() { window.location.href = 'admin.html'; }, 500);
-      } else if (data.role === 'member') {
-        setTimeout(function() { window.location.href = 'family.html'; }, 500);
-      } else {
-        showMsg('Unknown role: ' + data.role, 'error');
-        setLoading(false);
-      }
-    }).catch(function(e) {
-      console.log("Firestore error:", e.code, e.message);
-      showMsg('Database error: ' + e.code + ' - ' + e.message, 'error');
-      setLoading(false);
-    });
-  }
-
-  // Listen for auth state
-  auth.onAuthStateChanged(function(user) {
-    console.log("onAuthStateChanged fired, user:", user ? user.email : "null");
-    if (user) {
-      handleUser(user);
+  // Sign-in is handled by Azure Static Web Apps (/.auth/*); access is decided by /api/me.
+  (function () {
+    var msg = document.getElementById('msg');
+    function show(text, type) { msg.textContent = text; msg.className = 'msg ' + type; }
+    function signedInView() {
+      document.getElementById('signin').hidden = true;
+      document.getElementById('signed-in').hidden = false;
     }
-  });
 
-  function signInEmail() {
-    var email = document.getElementById('email').value.trim();
-    var password = document.getElementById('password').value;
-    if (!email || !password) { showMsg('Please enter your email and password.', 'error'); return; }
-    setLoading(true);
-    auth.signInWithEmailAndPassword(email, password)
-      .then(function(result) { handleUser(result.user); })
-      .catch(function(e) {
-        var msgs = {
-          'auth/user-not-found': 'No account found with this email.',
-          'auth/wrong-password': 'Incorrect password.',
-          'auth/invalid-email': 'Please enter a valid email address.',
-          'auth/too-many-requests': 'Too many attempts. Please try again later.',
-          'auth/invalid-credential': 'Invalid email or password.'
-        };
-        showMsg(msgs[e.code] || 'Sign in failed. Please try again.', 'error');
-        setLoading(false);
-      });
-  }
+    async function check() {
+      var me;
+      try {
+        var r = await fetch('/.auth/me', { cache: 'no-store' });
+        me = (await r.json()).clientPrincipal;
+      } catch (e) { return; }
+      if (!me) return;                       // not signed in: show the buttons
 
-  function signInGoogle() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(function(e) {
-      if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
-        auth.signInWithRedirect(provider);
-      } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
-        showMsg('Google sign-in failed: ' + e.message, 'error');
+      signedInView();
+      show('Checking your access…', 'info');
+      var r2 = await fetch('/api/me', { cache: 'no-store' });
+      if (!r2.ok) { show('We couldn’t check your access just now. Please try again in a minute.', 'error'); return; }
+      var user = await r2.json();
+
+      // Roles are attached when you sign in. If an admin approved you since, sign in once more (quietly).
+      var needs = user.role === 'admin' ? 'admin' : user.role === 'member' ? 'member' : null;
+      if (needs && user.sessionRoles.indexOf(needs) === -1) {
+        var tries = 0; try { tries = +sessionStorage.getItem('mcb-refresh') || 0; } catch (e) {}
+        if (tries < 1) {
+          try { sessionStorage.setItem('mcb-refresh', String(tries + 1)); } catch (e) {}
+          show('You’ve been approved, opening the family portal…', 'success');
+          location.href = '/.auth/login/' + me.identityProvider + '?post_login_redirect_uri=/login.html';
+          return;
+        }
       }
-    });
-  }
+      try { sessionStorage.removeItem('mcb-refresh'); } catch (e) {}
 
-  function signInMicrosoft() {
-    var provider = new firebase.auth.OAuthProvider('microsoft.com');
-    provider.setCustomParameters({ prompt: 'select_account' });
-    auth.signInWithPopup(provider).catch(function(e) {
-      if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
-        auth.signInWithRedirect(provider);
-      } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
-        showMsg('Microsoft sign-in failed: ' + e.message, 'error');
-      }
-    });
-  }
-
-  document.getElementById('password').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') signInEmail();
-  });
+      if (user.role === 'admin') { show('Welcome back. Opening the admin dashboard…', 'success'); location.replace('admin.html'); }
+      else if (user.role === 'member') { show('Welcome back. Opening the family portal…', 'success'); location.replace('family.html'); }
+      else if (user.role === 'pending') show('Hi ' + (user.name || 'kamag-anak') + '! You’re signed in, but this email isn’t on the family list yet. It now shows as a request on the admin page, so a family admin can let you in.', 'pending');
+      else if (user.role === 'denied') show('Your access wasn’t approved. Please contact a family admin.', 'error');
+      else if (user.role === 'no-email') show('Your account didn’t share an email address, so we can’t match it to the family list. Please contact a family admin.', 'error');
+      else show('Something unexpected happened. Please contact a family admin.', 'error');
+    }
+    check();
+  })();
 </script>
 </body>
 </html>
