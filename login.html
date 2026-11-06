@@ -2,123 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Macabuhay — Family Login</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family login — Macabuhay</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f1e6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 <style>
-  :root {
-    --cream: #faf7f2; --cream2: #f3ede3;
-    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
-    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
-    --border: rgba(180,150,100,0.2); --error: #c0392b;
+  .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100svh; }
+  .login-photo { position: relative; background: var(--g-dark); overflow: hidden; }
+  .login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .login-side { display: flex; flex-direction: column; padding: 32px var(--gut); }
+  .login-top { display: flex; justify-content: space-between; align-items: center; }
+  .login-top .script { font-size: 40px; }
+  .login-form { width: 100%; max-width: 400px; margin: auto; padding: 48px 0; display: flex; flex-direction: column; gap: 20px; }
+  .login-form h1 { font-size: clamp(36px, 2vw + 20px, 52px); }
+  .login-form .intro { color: var(--muted); font-size: 16px; margin-top: -8px; }
+  .row-between { display: flex; justify-content: space-between; align-items: baseline; }
+  .reset { background: none; border: 0; padding: 0; cursor: pointer; font-size: 14px; }
+  .divider { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .btn-social { gap: 12px; background: var(--g-card); }
+  .btn-social svg { width: 18px; height: 18px; flex: none; }
+  .login-foot { font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 860px) {
+    .login { grid-template-columns: 1fr; }
+    .login-photo { height: 28svh; min-height: 180px; }
+    .login-form { padding: 32px 0; }
   }
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--cream2); font-family: 'EB Garamond', serif;
-    color: var(--ink); min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .login-wrap { width: 100%; max-width: 440px; padding: 24px; }
-  .login-card { background: var(--cream); border: 1px solid var(--border); padding: 52px 44px; }
-  .login-logo { text-align: center; margin-bottom: 36px; }
-  .login-logo .script {
-    font-family: 'Cormorant Garamond', serif; font-size: 42px;
-    font-weight: 300; font-style: italic; color: var(--gold-dk); line-height: 1; display: block;
-  }
-  .login-logo .rule { width: 40px; height: 1px; background: var(--tan); margin: 12px auto; }
-  .login-logo .tagline {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-lt);
-  }
-  .login-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 22px;
-    font-weight: 400; color: var(--ink); text-align: center; margin-bottom: 32px;
-  }
-  .form-group { margin-bottom: 20px; }
-  label {
-    display: block; font-family: 'Cormorant Garamond', serif;
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink-lt); margin-bottom: 8px;
-  }
-  input[type="email"], input[type="password"] {
-    width: 100%; padding: 12px 16px;
-    background: var(--cream2); border: 1px solid var(--border);
-    font-family: 'EB Garamond', serif; font-size: 16px; color: var(--ink);
-    outline: none; transition: border-color 0.2s;
-  }
-  input:focus { border-color: var(--tan); }
-  .btn-signin {
-    width: 100%; padding: 14px; background: var(--ink); color: var(--cream);
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    border: none; cursor: pointer; margin-top: 8px; transition: background 0.3s;
-  }
-  .btn-signin:hover { background: var(--gold-dk); }
-  .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
-  .divider { display: flex; align-items: center; gap: 16px; margin: 28px 0; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .divider span {
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-lt);
-  }
-  .btn-social {
-    width: 100%; padding: 13px 16px; margin-bottom: 12px;
-    background: transparent; border: 1px solid var(--border);
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink);
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .btn-social:hover { border-color: var(--tan); background: var(--cream2); }
-  .btn-social:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn-social svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .msg { padding: 12px 16px; margin-bottom: 20px; font-family: 'Cormorant Garamond', serif; font-size: 14px; display: none; }
-  .msg.error { background: #fdf0ef; border: 1px solid #e8b4b0; color: var(--error); display: block; }
-  .msg.info { background: #f0f7ed; border: 1px solid #b4d4a8; color: #2d6e1f; display: block; }
-  .msg.pending { background: #faf5e8; border: 1px solid #d4c07a; color: #7a6020; display: block; }
-  .back-link {
-    display: block; text-align: center; margin-top: 24px;
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    font-style: italic; color: var(--ink-lt); text-decoration: none; transition: color 0.2s;
-  }
-  .back-link:hover { color: var(--gold); }
 </style>
 </head>
 <body>
-<div class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo">
-      <span class="script">Macabuhay</span>
-      <div class="rule"></div>
-      <div class="tagline">Family Portal</div>
-    </div>
-    <div class="login-title">Welcome back</div>
-    <div id="msg" class="msg"></div>
-    <div class="form-group">
-      <label for="email">Email address</label>
-      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <button class="btn-signin" id="btn-email" onclick="signInEmail()">Sign In</button>
-    <div class="divider"><span>or continue with</span></div>
-    <button class="btn-social" id="btn-google" onclick="signInGoogle()">
-      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Sign in with Google
-    </button>
-    <button class="btn-social" id="btn-microsoft" onclick="signInMicrosoft()">
-      <svg viewBox="0 0 24 24"><path d="M11.4 2H2v9.4h9.4V2z" fill="#F25022"/><path d="M22 2h-9.4v9.4H22V2z" fill="#7FBA00"/><path d="M11.4 12.6H2V22h9.4v-9.4z" fill="#00A4EF"/><path d="M22 12.6h-9.4V22H22v-9.4z" fill="#FFB900"/></svg>
-      Sign in with Microsoft
-    </button>
-    <a href="index.html" class="back-link">← Back to homepage</a>
+<div class="login">
+  <div class="login-photo" aria-hidden="true">
+    <!-- STAND-IN: replace with a family photograph -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/1280px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg"
+         srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/960px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg 960w,
+                 https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg/1920px-Lake_Pandin%2C_San_Pablo%2C_Laguna.jpg 1920w"
+         sizes="(max-width: 860px) 100vw, 50vw" alt="">
   </div>
+
+  <main class="login-side">
+    <div class="login-top">
+      <a class="brand" href="index.html" aria-label="Macabuhay home"><span class="script">Macabuhay</span></a>
+      <a class="link" href="index.html">Back to home</a>
+    </div>
+
+    <div class="login-form">
+      <div>
+        <span class="label label--gold">Family portal</span>
+      </div>
+      <h1>Welcome <em>home</em></h1>
+      <p class="intro">Sign in to see family photos, profiles and events. New members are approved by a family admin.</p>
+
+      <div id="msg" class="msg" role="status" aria-live="polite"></div>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <input class="input" type="email" id="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <div class="row-between">
+          <label for="password">Password</label>
+          <button type="button" class="link link--action reset" onclick="resetPassword()">Forgot password?</button>
+        </div>
+        <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button id="btn-email" class="btn btn--primary btn--block" type="button" onclick="signInEmail()">Sign in</button>
+
+      <div class="divider">or continue with</div>
+
+      <button id="btn-google" class="btn btn--secondary btn--block btn-social" type="button" onclick="signInGoogle()">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+        Sign in with Google
+      </button>
+      <button id="btn-microsoft" class="btn btn--secondary btn--block btn-social" type="button" onclick="signInMicrosoft()">
+        <svg viewBox="0 0 23 23" aria-hidden="true"><path fill="#f25022" d="M1 1h10v10H1z"/><path fill="#7fba00" d="M12 1h10v10H12z"/><path fill="#00a4ef" d="M1 12h10v10H1z"/><path fill="#ffb900" d="M12 12h10v10H12z"/></svg>
+        Sign in with Microsoft
+      </button>
+    </div>
+
+    <div class="login-foot">
+      <span>© 2026 The Macabuhay Family</span>
+      <span>Private family site · invitation only</span>
+    </div>
+  </main>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
 <script>
   var firebaseConfig = {
     apiKey: "AIzaSyDFm6zKz-GFfwN2ctWoEsCjTpir7B22scI",
@@ -146,13 +121,10 @@
   }
 
   function handleUser(user) {
-    console.log("handleUser called for:", user.email, "uid:", user.uid);
-    showMsg('Checking access...', 'info');
+    showMsg('Checking access…', 'info');
     var ref = db.collection('users').doc(user.uid);
     ref.get().then(function(snap) {
-      console.log("Firestore snap exists:", snap.exists);
       if (!snap.exists) {
-        console.log("No document found, creating pending record");
         ref.set({
           uid: user.uid,
           email: user.email,
@@ -161,7 +133,7 @@
           role: 'pending',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(function() {
-          showMsg('Your request has been submitted. Please wait for admin approval.', 'pending');
+          showMsg('Your request has been sent. A family admin will approve your access soon.', 'pending');
           setLoading(false);
         }).catch(function(e) {
           console.log("Error creating record:", e);
@@ -171,17 +143,17 @@
         return;
       }
       var data = snap.data();
-      console.log("User role:", data.role);
-      showMsg('Role: ' + data.role + ' — redirecting...', 'info');
       if (data.role === 'pending') {
-        showMsg('Your access request is pending approval.', 'pending');
+        showMsg('Your access request is waiting for approval.', 'pending');
         setLoading(false);
       } else if (data.role === 'denied') {
-        showMsg('Your access was not approved.', 'error');
+        showMsg('Your access was not approved. Please contact a family admin.', 'error');
         setLoading(false);
       } else if (data.role === 'admin') {
+        showMsg('Welcome back — opening the admin dashboard…', 'success');
         setTimeout(function() { window.location.href = 'admin.html'; }, 500);
       } else if (data.role === 'member') {
+        showMsg('Welcome back — opening the family portal…', 'success');
         setTimeout(function() { window.location.href = 'family.html'; }, 500);
       } else {
         showMsg('Unknown role: ' + data.role, 'error');
@@ -196,7 +168,6 @@
 
   // Listen for auth state
   auth.onAuthStateChanged(function(user) {
-    console.log("onAuthStateChanged fired, user:", user ? user.email : "null");
     if (user) {
       handleUser(user);
     }
@@ -219,6 +190,16 @@
         };
         showMsg(msgs[e.code] || 'Sign in failed. Please try again.', 'error');
         setLoading(false);
+      });
+  }
+
+  function resetPassword() {
+    var email = document.getElementById('email').value.trim();
+    if (!email) { showMsg('Enter your email address above, then tap “Forgot password?” again.', 'info'); document.getElementById('email').focus(); return; }
+    auth.sendPasswordResetEmail(email)
+      .then(function() { showMsg('If an account exists for ' + email + ', a reset link is on its way.', 'success'); })
+      .catch(function(e) {
+        showMsg(e.code === 'auth/invalid-email' ? 'Please enter a valid email address.' : 'Could not send the reset email. Please try again.', 'error');
       });
   }
 
@@ -245,8 +226,10 @@
     });
   }
 
-  document.getElementById('password').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') signInEmail();
+  ['email', 'password'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') signInEmail();
+    });
   });
 </script>
 </body>

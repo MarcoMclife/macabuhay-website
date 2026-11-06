@@ -2,299 +2,171 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Macabuhay — Family</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family portal — Macabuhay</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f1e6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 <style>
-  :root {
-    --cream: #faf7f2; --cream2: #f3ede3;
-    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
-    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
-    --border: rgba(180,150,100,0.2);
-  }
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--cream); font-family: 'EB Garamond', serif; color: var(--ink); }
+  #main-nav, #main-content { display: none; }
+  .nav-user { display: flex; align-items: center; gap: 12px; }
+  .nav-user #user-name { font-size: 15px; font-weight: 600; max-width: 16ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav-user .avatar { width: 36px; height: 36px; font-size: 15px; }
+  .nav-user .btn { height: 40px; padding: 0 18px; font-size: 15px; }
+  @media (max-width: 639px) { .nav-user #user-name { display: none; } }
 
-  #auth-guard {
-    position: fixed; inset: 0; background: var(--cream);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 9999; font-family: 'Cormorant Garamond', serif;
-    font-size: 14px; letter-spacing: 0.15em; color: var(--ink-lt);
-  }
-
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 48px;
-    background: rgba(250,247,242,0.92); backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo {
-    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500;
-    color: var(--ink); letter-spacing: 0.05em; text-decoration: none;
-  }
-  .nav-links { display: flex; gap: 28px; align-items: center; list-style: none; }
-  .nav-links a {
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--ink-lt); text-decoration: none; transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--gold); }
-  .nav-user {
-    display: flex; align-items: center; gap: 12px;
-    font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--ink-lt);
-  }
-  .nav-user .avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--cream2); border: 1px solid var(--tan);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--gold-dk); font-weight: 500;
-    overflow: hidden;
-  }
-  .nav-user .avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .btn-signout {
-    padding: 7px 20px; border: 1px solid var(--border);
-    background: transparent; color: var(--ink-lt);
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    cursor: pointer; transition: border-color 0.2s, color 0.2s;
-  }
-  .btn-signout:hover { border-color: var(--tan); color: var(--ink); }
-
-  /* HERO */
-  .hero {
-    min-height: 60vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 140px 40px 60px;
-    position: relative;
-  }
-  .hero::after {
-    content: ''; position: absolute;
-    top: 100px; left: 48px; right: 48px; bottom: 24px;
-    border: 1px solid var(--border); pointer-events: none;
-  }
-  .hero-label {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold);
-    margin-bottom: 16px; opacity: 0; animation: riseIn 0.8s ease forwards 0.2s;
-  }
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(48px, 8vw, 80px); font-weight: 300;
-    line-height: 1; color: var(--ink);
-    opacity: 0; animation: riseIn 0.8s ease forwards 0.4s;
-  }
-  .hero-title em { font-style: italic; color: var(--gold-dk); }
-  .hero-welcome {
-    margin-top: 20px; font-family: 'Cormorant Garamond', serif;
-    font-size: 16px; font-style: italic; color: var(--ink-lt);
-    opacity: 0; animation: riseIn 0.8s ease forwards 0.6s;
+  /* hero */
+  .p-hero { padding: calc(var(--nav) + 56px) 0 0; }
+  .p-hero .wrap { display: flex; flex-direction: column; gap: 40px; }
+  .p-hero-head { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: end; }
+  .p-hero-head > div { grid-column: 1 / span 7; display: flex; flex-direction: column; gap: 16px; }
+  .p-hero-head > p { grid-column: 9 / span 4; }
+  .p-hero h1 em { color: var(--action); }
+  .p-hero .frame { aspect-ratio: 21 / 8; }
+  @media (max-width: 860px) {
+    .p-hero-head { grid-template-columns: 1fr; }
+    .p-hero-head > * { grid-column: 1 / -1 !important; }
+    .p-hero .frame { aspect-ratio: 16 / 10; }
   }
 
-  /* SECTIONS */
-  .section-wrap { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
-  .section-label {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
-  }
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(32px, 4vw, 48px); font-weight: 300;
-    color: var(--ink); line-height: 1.1; margin-bottom: 24px;
-  }
-  .section-title em { font-style: italic; color: var(--gold-dk); }
-  .section-divider { width: 48px; height: 1px; background: var(--gold); margin: 0 0 32px; }
+  /* quick links */
+  .quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 24px; }
+  .quick a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-radius: var(--r-md); background: var(--g-card); border: 1px solid var(--line); text-decoration: none; transition: transform .2s var(--ease), border-color .2s; }
+  .quick a:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+  .quick strong { font: 500 20px/1.2 var(--f-display); }
+  .quick span { font-size: 14px; color: var(--muted); }
+  .quick svg { width: 18px; height: 18px; color: var(--action); flex: none; transition: transform .2s var(--ease); }
+  .quick a:hover svg { transform: translateX(3px); }
+  @media (max-width: 860px) { .quick { grid-template-columns: 1fr; gap: 12px; } }
 
-  /* GALLERY */
-  #gallery { border-top: 1px solid var(--border); }
-  .gallery-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px;
-  }
-  .gallery-item {
-    background: var(--cream2); border: 1px solid var(--border);
-    aspect-ratio: 4/3; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 8px;
-    cursor: pointer; transition: border-color 0.3s, transform 0.3s;
-    position: relative; overflow: hidden;
-  }
-  .gallery-item:first-child { grid-column: span 2; aspect-ratio: 16/9; }
-  .gallery-item:hover { border-color: var(--tan); transform: translateY(-2px); }
-  .gallery-icon { font-size: 24px; color: var(--tan); }
-  .gallery-label {
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-lt);
-  }
-  .gallery-hover {
-    position: absolute; inset: 0; display: flex;
-    align-items: center; justify-content: center;
-    opacity: 0; background: rgba(250,247,242,0.92); transition: opacity 0.3s;
-    font-family: 'Cormorant Garamond', serif; font-size: 12px;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
-  }
-  .gallery-item:hover .gallery-hover { opacity: 1; }
+  /* gallery */
+  .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 220px; gap: 16px; }
+  .gallery-item { position: relative; border-radius: var(--r-md); border: 1.5px dashed var(--line-strong); background: var(--g-card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted); text-align: center; padding: 16px; transition: border-color .2s, background-color .2s; }
+  .gallery-item:hover { border-color: var(--gold); background: #fffaf0; }
+  .gallery-item:first-child { grid-column: span 2; grid-row: span 2; }
+  .gallery-item svg { width: 28px; height: 28px; color: var(--gold); }
+  .gallery-item strong { font: 500 18px/1.2 var(--f-display); color: var(--ink); }
+  .gallery-item span { font-size: 14px; }
+  @media (max-width: 1023px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; } }
+  @media (max-width: 639px) { .gallery-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 140px; gap: 12px; } .gallery-item:first-child { grid-row: span 1; } }
 
-  /* MEMBERS */
-  #members { border-top: 1px solid var(--border); background: var(--cream2); }
-  .members-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 24px; margin-top: 40px;
-  }
-  .member-card {
-    background: var(--cream); border: 1px solid var(--border);
-    padding: 32px 20px; text-align: center;
-    transition: border-color 0.3s, transform 0.3s;
-  }
-  .member-card:hover { border-color: var(--tan); transform: translateY(-3px); }
-  .member-avatar {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: var(--cream2); border: 2px solid var(--tan);
-    margin: 0 auto 14px; display: flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold-dk);
-    overflow: hidden;
-  }
+  /* members (cards are injected by the script) */
+  .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; }
+  .member-card { background: var(--g-card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 32px 20px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; transition: transform .2s var(--ease), border-color .2s; }
+  .member-card:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+  .member-avatar { width: 88px; height: 88px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--g-dark); color: var(--on-dark); font: 400 34px/1 var(--f-display); margin-bottom: 10px; box-shadow: 0 0 0 4px var(--g-card), 0 0 0 5px var(--gold); }
   .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .member-name {
-    font-family: 'Cormorant Garamond', serif; font-size: 18px;
-    font-weight: 400; color: var(--ink); margin-bottom: 4px;
-  }
-  .member-role {
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-lt);
-  }
+  .member-name { font: 500 20px/1.25 var(--f-display); }
+  @media (max-width: 639px) { .members-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .member-card { padding: 24px 12px 20px; } .member-avatar { width: 64px; height: 64px; font-size: 26px; } .member-name { font-size: 17px; } }
+  .member-role { font-size: 13px; font-weight: 600; color: var(--muted); }
 
-  /* EVENTS */
-  #events { border-top: 1px solid var(--border); }
-  .events-list { margin-top: 32px; }
-  .event-item {
-    display: grid; grid-template-columns: 72px 1fr auto;
-    gap: 24px; align-items: center; padding: 20px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .event-item:first-child { border-top: 1px solid var(--border); }
-  .event-date {
-    text-align: center; background: var(--cream2);
-    border: 1px solid var(--border); padding: 8px;
-  }
-  .event-month {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); display: block;
-  }
-  .event-day {
-    font-family: 'Cormorant Garamond', serif; font-size: 28px;
-    font-weight: 300; color: var(--ink); line-height: 1; display: block;
-  }
-  .event-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 20px;
-    font-weight: 400; color: var(--ink); margin-bottom: 4px;
-  }
-  .event-desc {
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    color: var(--ink-lt); font-style: italic;
-  }
-  .event-tag {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--gold); border: 1px solid var(--tan); padding: 4px 10px; white-space: nowrap;
-  }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border); padding: 40px;
-    text-align: center; background: var(--cream2);
-  }
-  .footer-script {
-    font-family: 'Cormorant Garamond', serif; font-size: 30px;
-    font-weight: 300; font-style: italic; color: var(--gold-dk); margin-bottom: 6px;
-  }
-  .footer-copy {
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    color: var(--tan); letter-spacing: 0.1em;
-  }
-
-  @keyframes riseIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-
-  @media (max-width: 768px) {
-    nav { padding: 14px 20px; }
-    .section-wrap { padding: 56px 20px; }
-    .gallery-grid { grid-template-columns: 1fr 1fr; }
-    .gallery-item:first-child { grid-column: span 2; }
-    .hero::after { display: none; }
-    .event-item { grid-template-columns: 60px 1fr; }
-    .event-tag { display: none; }
+  /* events */
+  .events-list { display: flex; flex-direction: column; border-top: 1px solid var(--line-strong); }
+  .event-item { display: grid; grid-template-columns: 96px 1fr auto; gap: 32px; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--line); }
+  .event-date { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: var(--r-md); background: var(--g-dark); color: var(--on-dark); }
+  .event-month { font-size: 13px; font-weight: 600; color: var(--on-dark-muted); }
+  .event-day { font: 400 30px/1 var(--f-display); }
+  .event-title { font: 500 22px/1.25 var(--f-display); }
+  .event-desc { color: var(--muted); margin-top: 4px; }
+  .event-tag { font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--g-alt); color: var(--muted); }
+  .event-tag--gold { background: #f3e6c8; color: #6e4f1d; }
+  .event-item--ghost .event-date { background: transparent; border: 1.5px dashed var(--line-strong); color: var(--muted); }
+  .event-item--ghost .event-month { color: var(--muted); }
+  @media (max-width: 639px) {
+    .event-item { grid-template-columns: 64px 1fr; gap: 16px; }
+    .event-date { width: 64px; height: 64px; }
+    .event-day { font-size: 24px; }
+    .event-tag { grid-column: 2; justify-self: start; }
   }
 </style>
 </head>
 <body>
 
-<div id="auth-guard">Verifying access…</div>
-
-<nav id="main-nav" style="display:none">
-  <a href="index.html" class="nav-logo">Macabuhay</a>
-  <ul class="nav-links">
-    <li><a href="#gallery">Gallery</a></li>
-    <li><a href="#members">Family</a></li>
-    <li><a href="#events">Events</a></li>
-  </ul>
-  <div class="nav-user">
-    <div class="avatar" id="user-avatar">?</div>
-    <span id="user-name"></span>
-    <button class="btn-signout" onclick="signOut()">Sign Out</button>
+<div id="auth-guard" class="guard">
+  <div class="guard-inner">
+    <span class="script">Macabuhay</span>
+    <div class="spinner" aria-hidden="true"></div>
+    <span class="muted">Verifying access…</span>
   </div>
-</nav>
+</div>
 
-<div id="main-content" style="display:none">
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-label">Private — Family Members</div>
-    <h1 class="hero-title">Welcome,<br><em>Family</em></h1>
-    <p class="hero-welcome" id="hero-welcome">You are home.</p>
-  </div>
-
-  <!-- GALLERY -->
-  <div id="gallery">
-    <div class="section-wrap">
-      <div class="section-label">Memories</div>
-      <h2 class="section-title"><em>Our</em> Gallery</h2>
-      <div class="section-divider"></div>
-      <div class="gallery-grid">
-        <div class="gallery-item">
-          <div class="gallery-icon">&#9670;</div>
-          <div class="gallery-label">Featured Photo</div>
-          <div class="gallery-hover">+ Add Photo</div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-icon">&#9670;</div>
-          <div class="gallery-label">Memory</div>
-          <div class="gallery-hover">+ Add Photo</div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-icon">&#9670;</div>
-          <div class="gallery-label">Memory</div>
-          <div class="gallery-hover">+ Add Photo</div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-icon">&#9670;</div>
-          <div class="gallery-label">Memory</div>
-          <div class="gallery-hover">+ Add Photo</div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-icon">&#9670;</div>
-          <div class="gallery-label">Memory</div>
-          <div class="gallery-hover">+ Add Photo</div>
-        </div>
-      </div>
+<header id="main-nav" class="nav">
+  <div class="wrap">
+    <a class="skip" href="#main-content">Skip to content</a>
+    <a class="brand" href="index.html" aria-label="Macabuhay home"><span class="script">Macabuhay</span></a>
+    <ul class="nav-links">
+      <li><a class="link" href="#gallery">Gallery</a></li>
+      <li><a class="link" href="#members">Family</a></li>
+      <li><a class="link" href="#events">Events</a></li>
+    </ul>
+    <div class="nav-user">
+      <div id="user-avatar" class="avatar">?</div>
+      <span id="user-name"></span>
+      <button class="btn btn--secondary" type="button" onclick="signOut()">Sign out</button>
     </div>
   </div>
+</header>
 
-  <!-- MEMBERS -->
-  <div id="members">
-    <div class="section-wrap">
-      <div class="section-label">The Family</div>
-      <h2 class="section-title">Our <em>People</em></h2>
-      <div class="section-divider"></div>
-      <div class="members-grid" id="members-grid">
+<main id="main-content">
+  <section class="p-hero">
+    <div class="wrap">
+      <div class="p-hero-head">
+        <div>
+          <span class="label label--gold">Private · family members</span>
+          <h1>Welcome <em>home</em></h1>
+        </div>
+        <p id="hero-welcome" class="lead">You are home.</p>
+      </div>
+      <div class="frame frame--zoom">
+        <!-- STAND-IN: replace with a family group photograph (wide) -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg/1920px-Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg"
+             srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg/960px-Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg 960w,
+                     https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg/1920px-Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_%28San_Pablo%2C_Laguna%3B_10-08-2022%29.jpg 1920w"
+             sizes="100vw" alt="Sampaloc Lake boardwalk with Mount Banahaw" style="object-position: 50% 60%">
+      </div>
+      <nav class="quick" aria-label="Portal sections">
+        <a href="#gallery"><div><strong>Gallery</strong><br><span>Photos and memories</span></div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a href="#members"><div><strong>Our people</strong><br><span>Everyone in the family</span></div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a href="#events"><div><strong>Events</strong><br><span>Birthdays and reunions</span></div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      </nav>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="label">Memories</span>
+          <h2>Our <em>gallery</em></h2>
+        </div>
+        <p class="muted">Family photos will live here — reunions, birthdays, fiestas and everyday moments.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>
+          <strong>Featured photo</strong><span>Coming soon</span>
+        </div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg><span>Memory</span></div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg><span>Memory</span></div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg><span>Memory</span></div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg><span>Memory</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="members" class="section--alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="label">The family</span>
+          <h2>Our <em>people</em></h2>
+        </div>
+        <p class="muted">Everyone with access to the family portal.</p>
+      </div>
+      <div id="members-grid" class="members-grid">
         <div class="member-card">
           <div class="member-avatar">M</div>
           <div class="member-name">Marco</div>
@@ -302,47 +174,49 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- EVENTS -->
-  <div id="events">
-    <div class="section-wrap">
-      <div class="section-label">Calendar</div>
-      <h2 class="section-title">Events &amp; <em>Milestones</em></h2>
-      <div class="section-divider"></div>
+  <section id="events">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="label">Calendar</span>
+          <h2>Events &amp; <em>milestones</em></h2>
+        </div>
+        <p class="muted">The dates that bring us together.</p>
+      </div>
       <div class="events-list">
         <div class="event-item">
-          <div class="event-date">
-            <span class="event-month">May</span>
-            <span class="event-day">12</span>
-          </div>
+          <div class="event-date"><span class="event-month">May</span><span class="event-day">12</span></div>
           <div>
-            <div class="event-title">Website Launch</div>
-            <div class="event-desc">The Macabuhay Family Website goes live — Version 1.0</div>
+            <div class="event-title">Website launch</div>
+            <div class="event-desc">The Macabuhay family website goes live — version 1.0</div>
           </div>
-          <div class="event-tag">Milestone</div>
+          <div class="event-tag event-tag--gold">Milestone</div>
         </div>
-        <div class="event-item">
-          <div class="event-date">
-            <span class="event-month">—</span>
-            <span class="event-day" style="font-size:16px;line-height:2.2;">TBD</span>
-          </div>
+        <div class="event-item event-item--ghost">
+          <div class="event-date"><span class="event-month">Next</span><span class="event-day">+</span></div>
           <div>
-            <div class="event-title">Add an Event</div>
-            <div class="event-desc">Birthdays, reunions, and celebrations</div>
+            <div class="event-title">Add an event</div>
+            <div class="event-desc">Birthdays, reunions and celebrations</div>
           </div>
           <div class="event-tag">Upcoming</div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <footer>
-    <div class="footer-script">Macabuhay</div>
-    <div class="footer-copy">&copy; 2026 The Macabuhay Family &nbsp;·&nbsp; Private</div>
+  <footer class="footer">
+    <div class="wrap">
+      <div>
+        <span class="script">Macabuhay</span>
+        <p>Our strength is our family.</p>
+      </div>
+      <p>© 2026 The Macabuhay Family · Private</p>
+      <p class="credits">Photograph via Wikimedia Commons, CC BY-SA 4.0: <a href="https://commons.wikimedia.org/wiki/File:Sampaloc_Lake_boardwalk_with_Mount_Banahaw_view_(San_Pablo,_Laguna;_10-08-2022).jpg">Patrickroque01</a>.</p>
+    </div>
   </footer>
-
-</div>
+</main>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -362,6 +236,8 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'login.html'; return; }
 
@@ -375,17 +251,17 @@
 
     // Show content
     document.getElementById('auth-guard').style.display = 'none';
-    document.getElementById('main-nav').style.display = 'flex';
+    document.getElementById('main-nav').style.display = 'block';
     document.getElementById('main-content').style.display = 'block';
 
     // Set user info in nav
     const name = user.displayName || user.email.split('@')[0];
     document.getElementById('user-name').textContent = name;
-    document.getElementById('hero-welcome').textContent = `Welcome back, ${name.split(' ')[0]}.`;
+    document.getElementById('hero-welcome').textContent = `Welcome back, ${name.split(' ')[0]}. This is our family’s private corner — photos, people and the dates that bring us together.`;
 
     const avatarEl = document.getElementById('user-avatar');
     if (user.photoURL) {
-      avatarEl.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+      avatarEl.innerHTML = `<img src="${esc(user.photoURL)}" alt="${esc(name)}">`;
     } else {
       avatarEl.textContent = name.charAt(0).toUpperCase();
     }
@@ -395,20 +271,22 @@
       const q = query(collection(db, 'users'), where('role', 'in', ['member', 'admin']));
       const members = await getDocs(q);
       const grid = document.getElementById('members-grid');
-      grid.innerHTML = '';
+      let html = '';
       members.forEach(m => {
         const d = m.data();
+        const display = d.displayName || (d.email || '').split('@')[0];
         const initials = (d.displayName || d.email || '?').charAt(0).toUpperCase();
         const avatar = d.photoURL
-          ? `<div class="member-avatar"><img src="${d.photoURL}" alt="${d.displayName}"></div>`
-          : `<div class="member-avatar">${initials}</div>`;
-        grid.innerHTML += `
+          ? `<div class="member-avatar"><img src="${esc(d.photoURL)}" alt="${esc(display)}"></div>`
+          : `<div class="member-avatar">${esc(initials)}</div>`;
+        html += `
           <div class="member-card">
             ${avatar}
-            <div class="member-name">${d.displayName || d.email.split('@')[0]}</div>
-            <div class="member-role">${d.role === 'admin' ? 'Admin' : 'Family Member'}</div>
+            <div class="member-name">${esc(display)}</div>
+            <div class="member-role">${d.role === 'admin' ? 'Admin' : 'Family member'}</div>
           </div>`;
       });
+      grid.innerHTML = html;
     } catch(e) { console.log('Could not load members', e); }
   });
 

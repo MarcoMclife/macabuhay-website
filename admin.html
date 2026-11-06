@@ -2,362 +2,226 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Macabuhay — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin — Macabuhay</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1e3a2d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 <style>
-  :root {
-    --cream: #faf7f2; --cream2: #f3ede3;
-    --tan: #d4b896; --gold: #b8965a; --gold-dk: #8a6e3e;
-    --ink: #1c1712; --ink-mid: #3d3228; --ink-lt: #7a6a58;
-    --border: rgba(180,150,100,0.2);
-    --green: #2d6e1f; --green-bg: #f0f7ed; --green-border: #b4d4a8;
-    --red: #c0392b; --red-bg: #fdf0ef; --red-border: #e8b4b0;
-    --amber: #7a6020; --amber-bg: #faf5e8; --amber-border: #d4c07a;
-  }
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  body { background: var(--cream2); font-family: 'EB Garamond', serif; color: var(--ink); min-height: 100vh; }
+  #admin-ui { display: none; }
+  .admin { display: grid; grid-template-columns: 272px 1fr; min-height: 100svh; }
 
-  #auth-guard {
-    position: fixed; inset: 0; background: var(--cream);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 9999; font-family: 'Cormorant Garamond', serif;
-    font-size: 14px; letter-spacing: 0.15em; color: var(--ink-lt);
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
-    background: var(--ink); display: flex; flex-direction: column;
-    z-index: 50; padding: 0;
-  }
-  .sidebar-brand {
-    padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-brand .script {
-    font-family: 'Cormorant Garamond', serif; font-size: 26px;
-    font-weight: 300; font-style: italic; color: var(--tan); display: block; line-height: 1;
-  }
-  .sidebar-brand .label {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: rgba(255,255,255,0.35); margin-top: 6px;
-  }
-  .sidebar nav { padding: 20px 0; flex: 1; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 11px 24px; color: rgba(255,255,255,0.55);
-    font-family: 'Cormorant Garamond', serif; font-size: 13px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent;
-    border: none; background: none; width: 100%; text-align: left;
-  }
-  .nav-item:hover, .nav-item.active {
-    color: #fff; background: rgba(255,255,255,0.06); border-left: 3px solid var(--tan);
-  }
-  .nav-badge {
-    margin-left: auto; background: var(--gold); color: #fff;
-    font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
-  }
-  .sidebar-footer {
-    padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-user {
-    display: flex; align-items: center; gap: 10px;
-    font-family: 'Cormorant Garamond', serif; font-size: 12px; color: rgba(255,255,255,0.5);
-  }
-  .sidebar-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--tan); overflow: hidden; flex-shrink: 0;
-  }
+  /* sidebar */
+  .sidebar { position: sticky; top: 0; height: 100svh; background: var(--g-dark); color: var(--on-dark); display: flex; flex-direction: column; padding: 28px 16px 20px; }
+  .sidebar-brand { padding: 0 12px 28px; border-bottom: 1px solid rgba(247, 241, 230, .12); }
+  .sidebar-brand .script { font-size: 44px; }
+  .sidebar-brand .label { color: var(--on-dark-muted); display: block; margin-top: 6px; }
+  .sidebar nav { display: flex; flex-direction: column; gap: 4px; padding: 20px 0; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 12px; width: 100%; height: 44px; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--on-dark-muted); font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; transition: background-color .15s, color .15s; }
+  .nav-item svg { width: 18px; height: 18px; flex: none; }
+  .nav-item:hover { background: rgba(247, 241, 230, .06); color: var(--on-dark); }
+  .nav-item.active { background: rgba(247, 241, 230, .1); color: var(--on-dark); box-shadow: inset 2px 0 0 var(--gold); }
+  .nav-badge { margin-left: auto; min-width: 24px; height: 22px; padding: 0 7px; border-radius: 999px; background: var(--action); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+  .sidebar-footer { border-top: 1px solid rgba(247, 241, 230, .12); padding: 16px 8px 0; display: flex; flex-direction: column; gap: 14px; }
+  .sidebar-user { display: flex; align-items: center; gap: 12px; }
+  .sidebar-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--gold); color: var(--g-dark-2); font: 500 17px/1 var(--f-display); flex: none; }
   .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .btn-signout-sm {
-    margin-top: 10px; width: 100%; padding: 8px;
-    background: transparent; border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.4); font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-signout-sm:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+  #admin-name { font-weight: 600; color: var(--on-dark); font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px; }
+  .sidebar-user .role { font-size: 13px; color: var(--on-dark-muted); }
+  .btn-signout-sm { height: 40px; font-size: 14px; }
+  .sidebar-links { display: flex; gap: 16px; font-size: 14px; padding: 0 4px; }
+  .sidebar-links a { color: var(--on-dark-muted); text-decoration: none; }
+  .sidebar-links a:hover { color: var(--on-dark); }
 
-  /* MAIN */
-  .main { margin-left: 240px; padding: 48px; min-height: 100vh; }
+  /* main */
+  .main { padding: 56px clamp(20px, 4vw, 64px) 80px; min-width: 0; }
+  .tab-view { display: none; max-width: 1080px; }
+  .tab-view.active { display: block; animation: tabIn .25s var(--ease); }
+  @keyframes tabIn { from { opacity: 0; transform: translateY(6px); } }
+  .page-header { margin-bottom: 40px; display: flex; flex-direction: column; gap: 12px; }
+  .page-title { font-size: clamp(36px, 2.4vw + 16px, 56px); }
+  .page-title em { color: var(--action); }
+  .page-subtitle { color: var(--muted); font-size: 17px; }
 
-  .page-header { margin-bottom: 36px; }
-  .page-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 36px;
-    font-weight: 300; color: var(--ink); margin-bottom: 6px;
-  }
-  .page-title em { font-style: italic; color: var(--gold-dk); }
-  .page-subtitle {
-    font-family: 'Cormorant Garamond', serif; font-size: 14px;
-    font-style: italic; color: var(--ink-lt);
-  }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--g-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font: 400 44px/1 var(--f-display); letter-spacing: -.02em; }
+  .stat-label { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .stat-card--accent { background: var(--g-dark); border-color: var(--g-dark); color: var(--on-dark); }
+  .stat-card--accent .stat-label { color: var(--on-dark-muted); }
 
-  /* STATS */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
-  .stat-card {
-    background: var(--cream); border: 1px solid var(--border); padding: 24px 20px;
-  }
-  .stat-num {
-    font-family: 'Cormorant Garamond', serif; font-size: 36px;
-    font-weight: 300; color: var(--ink); line-height: 1;
-  }
-  .stat-label {
-    font-family: 'Cormorant Garamond', serif; font-size: 10px;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-lt); margin-top: 6px;
-  }
+  .panel { background: var(--g-card); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .panel-header { padding: 18px 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font: 500 20px/1.2 var(--f-display); }
 
-  /* PANEL */
-  .panel { background: var(--cream); border: 1px solid var(--border); margin-bottom: 24px; }
-  .panel-header {
-    padding: 20px 24px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .panel-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 18px;
-    font-weight: 400; color: var(--ink);
-  }
-  .panel-body { padding: 0; }
-
-  /* USER TABLE */
-  .user-row {
-    display: grid; grid-template-columns: 1fr 160px 120px 180px;
-    gap: 16px; align-items: center; padding: 16px 24px;
-    border-bottom: 1px solid var(--border); transition: background 0.15s;
-  }
-  .user-row:last-child { border-bottom: none; }
-  .user-row:hover { background: var(--cream2); }
-  .user-info { display: flex; align-items: center; gap: 12px; }
-  .user-av {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--cream2); border: 1px solid var(--tan);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--gold-dk);
-    flex-shrink: 0; overflow: hidden;
-  }
+  /* user rows (injected by the script) */
+  .user-row { display: grid; grid-template-columns: minmax(0, 2.2fr) 1fr 1fr auto; gap: 16px; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--line); transition: background-color .15s; }
+  .user-row:last-child { border-bottom: 0; }
+  .user-row:hover { background: #fcf7ee; }
+  .user-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .user-info > div:last-child { min-width: 0; }
+  .user-av { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--g-alt); color: var(--ink); font: 500 16px/1 var(--f-display); flex: none; }
   .user-av img { width: 100%; height: 100%; object-fit: cover; }
-  .user-name {
-    font-family: 'Cormorant Garamond', serif; font-size: 16px;
-    font-weight: 400; color: var(--ink);
-  }
-  .user-email {
-    font-family: 'Cormorant Garamond', serif; font-size: 12px;
-    font-style: italic; color: var(--ink-lt);
-  }
-  .user-date {
-    font-family: 'Cormorant Garamond', serif; font-size: 12px; color: var(--ink-lt);
-  }
-  .role-badge {
-    display: inline-block; padding: 3px 12px;
-    font-family: 'Cormorant Garamond', serif; font-size: 11px;
-    letter-spacing: 0.12em; text-transform: uppercase; border-radius: 2px;
-  }
-  .role-admin { background: var(--cream2); color: var(--gold-dk); border: 1px solid var(--tan); }
-  .role-member { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .role-pending { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-  .role-denied { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .user-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-email { font-size: 14px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-date { font-size: 14px; color: var(--muted); }
+  .role-badge { display: inline-flex; height: 26px; align-items: center; padding: 0 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .role-admin { background: #f3e6c8; color: #6e4f1d; }
+  .role-member { background: var(--ok-bg); color: #2c5a37; }
+  .role-pending { background: var(--warn-bg); color: #6e4c0c; }
+  .role-denied { background: var(--bad-bg); color: #7d321c; }
+  .role-note { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .action-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .action-btns button { height: 36px; padding: 0 16px; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: transform .15s var(--ease), background-color .15s, border-color .15s; }
+  .action-btns button:hover { transform: translateY(-1px); }
+  .action-btns button:active { transform: translateY(1px); }
+  .btn-approve { background: var(--g-dark); color: var(--on-dark); }
+  .btn-approve:hover { background: var(--g-dark-2); }
+  .btn-deny, .btn-revoke { background: transparent; color: var(--action); border-color: rgba(163, 70, 42, .35) !important; }
+  .btn-deny:hover, .btn-revoke:hover { border-color: var(--action) !important; }
+  .empty-state { padding: 48px 24px; text-align: center; color: var(--muted); }
 
-  .action-btns { display: flex; gap: 8px; }
-  .btn-approve {
-    padding: 6px 14px; background: var(--green-bg); border: 1px solid var(--green-border);
-    color: var(--green); font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-approve:hover { background: var(--green); color: #fff; }
-  .btn-deny {
-    padding: 6px 14px; background: var(--red-bg); border: 1px solid var(--red-border);
-    color: var(--red); font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-deny:hover { background: var(--red); color: #fff; }
-  .btn-revoke {
-    padding: 6px 14px; background: transparent; border: 1px solid var(--border);
-    color: var(--ink-lt); font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-revoke:hover { border-color: var(--red-border); color: var(--red); }
+  .add-form { padding: 24px; display: grid; grid-template-columns: 2fr 1fr auto; gap: 16px; align-items: end; }
+  .add-note { padding: 0 24px 24px; color: var(--muted); font-size: 15px; max-width: 64ch; }
 
-  /* ADD MEMBER */
-  .add-form { padding: 24px; display: grid; grid-template-columns: 1fr 180px auto; gap: 12px; align-items: end; }
-  .form-group label {
-    display: block; font-family: 'Cormorant Garamond', serif;
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink-lt); margin-bottom: 6px;
+  /* tablet / phone: sidebar becomes a top bar */
+  @media (max-width: 960px) {
+    .admin { grid-template-columns: 1fr; }
+    .sidebar { position: sticky; top: 0; z-index: 5; height: auto; padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 12px; }
+    .sidebar-brand { padding: 0; border: 0; display: flex; align-items: baseline; gap: 12px; }
+    .sidebar-brand .script { font-size: 34px; }
+    .sidebar-brand .label { margin: 0; }
+    .sidebar nav { grid-column: 1 / -1; grid-row: 2; flex-direction: row; padding: 4px 0 0; overflow-x: auto; scrollbar-width: none; }
+    .nav-item { width: auto; white-space: nowrap; flex: none; }
+    .nav-item.active { box-shadow: inset 0 -2px 0 var(--gold); }
+    .sidebar-footer { grid-column: 2; grid-row: 1; border: 0; padding: 0; flex-direction: row; align-items: center; }
+    .sidebar-user > div:last-child, .sidebar-links { display: none; }
+    .sidebar-avatar { width: 36px; height: 36px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
   }
-  .form-group input, .form-group select {
-    width: 100%; padding: 10px 14px;
-    background: var(--cream2); border: 1px solid var(--border);
-    font-family: 'EB Garamond', serif; font-size: 15px; color: var(--ink);
-    outline: none; transition: border-color 0.2s;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--tan); }
-  .btn-add {
-    padding: 11px 24px; background: var(--ink); color: var(--cream);
-    font-family: 'Cormorant Garamond', serif; font-size: 12px;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    border: none; cursor: pointer; transition: background 0.3s; white-space: nowrap;
-  }
-  .btn-add:hover { background: var(--gold-dk); }
-
-  .empty-state {
-    padding: 40px; text-align: center;
-    font-family: 'Cormorant Garamond', serif; font-size: 15px;
-    font-style: italic; color: var(--ink-lt);
-  }
-
-  .toast {
-    position: fixed; bottom: 32px; right: 32px;
-    background: var(--ink); color: var(--cream);
-    padding: 14px 24px; font-family: 'Cormorant Garamond', serif;
-    font-size: 14px; letter-spacing: 0.05em;
-    opacity: 0; transform: translateY(10px);
-    transition: all 0.3s; pointer-events: none; z-index: 999;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  .tab-view { display: none; }
-  .tab-view.active { display: block; }
-
-  @media (max-width: 900px) {
-    .sidebar { width: 200px; }
-    .main { margin-left: 200px; padding: 32px 24px; }
-    .stats { grid-template-columns: repeat(2,1fr); }
-    .user-row { grid-template-columns: 1fr 120px; }
-    .user-date, .role-badge { display: none; }
+  @media (max-width: 639px) {
+    .main { padding-top: 32px; }
+    .sidebar-brand .label { display: none; }
+    .user-row { grid-template-columns: 1fr auto; padding: 16px; }
+    .user-row > div:nth-child(3) { display: none; }
+    .user-row > div:last-child { grid-column: 1 / -1; }
+    .action-btns { justify-content: flex-start; }
     .add-form { grid-template-columns: 1fr; }
+    .add-form .btn { width: 100%; }
+    .stat-num { font-size: 36px; }
   }
 </style>
 </head>
 <body>
 
-<div id="auth-guard">Verifying admin access…</div>
-
-<div id="admin-ui" style="display:none">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <span class="script">Macabuhay</span>
-      <div class="label">Admin Dashboard</div>
-    </div>
-    <nav>
-      <button class="nav-item active" onclick="showTab('tab-overview', this)">Overview</button>
-      <button class="nav-item" onclick="showTab('tab-pending', this)">
-        Pending Requests <span class="nav-badge" id="pending-badge">0</span>
-      </button>
-      <button class="nav-item" onclick="showTab('tab-members', this)">Family Members</button>
-      <button class="nav-item" onclick="showTab('tab-add', this)">Add Member</button>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar" id="admin-avatar">A</div>
-        <div>
-          <div id="admin-name" style="color:rgba(255,255,255,0.7); font-size:13px;"></div>
-          <div style="font-size:11px; margin-top:2px;">Administrator</div>
-        </div>
-      </div>
-      <button class="btn-signout-sm" onclick="doSignOut()">Sign Out</button>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- OVERVIEW -->
-    <div id="tab-overview" class="tab-view active">
-      <div class="page-header">
-        <h1 class="page-title">Good to see you, <em id="admin-first">Admin</em></h1>
-        <p class="page-subtitle">Manage your family's access and site content from here.</p>
-      </div>
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-num" id="stat-members">—</div>
-          <div class="stat-label">Family Members</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-pending">—</div>
-          <div class="stat-label">Pending Requests</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-denied">—</div>
-          <div class="stat-label">Denied</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-total">—</div>
-          <div class="stat-label">Total Users</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Pending Requests</div>
-        </div>
-        <div class="panel-body" id="overview-pending"></div>
-      </div>
-    </div>
-
-    <!-- PENDING -->
-    <div id="tab-pending" class="tab-view">
-      <div class="page-header">
-        <h1 class="page-title"><em>Pending</em> Requests</h1>
-        <p class="page-subtitle">Review and approve or deny access requests from family members.</p>
-      </div>
-      <div class="panel">
-        <div class="panel-body" id="pending-list"></div>
-      </div>
-    </div>
-
-    <!-- MEMBERS -->
-    <div id="tab-members" class="tab-view">
-      <div class="page-header">
-        <h1 class="page-title">Family <em>Members</em></h1>
-        <p class="page-subtitle">All approved family members with access to the private site.</p>
-      </div>
-      <div class="panel">
-        <div class="panel-body" id="members-list"></div>
-      </div>
-    </div>
-
-    <!-- ADD MEMBER -->
-    <div id="tab-add" class="tab-view">
-      <div class="page-header">
-        <h1 class="page-title">Add <em>Member</em></h1>
-        <p class="page-subtitle">Directly add a family member by email address and set their role.</p>
-      </div>
-      <div class="panel">
-        <div class="panel-header"><div class="panel-title">Create Account</div></div>
-        <div class="add-form">
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="new-email" placeholder="family@email.com">
-          </div>
-          <div class="form-group">
-            <label>Role</label>
-            <select id="new-role">
-              <option value="member">Family Member</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <button class="btn-add" onclick="addMemberByEmail()">Add Member</button>
-        </div>
-        <div style="padding: 0 24px 24px;">
-          <p style="font-family:'Cormorant Garamond',serif; font-size:13px; font-style:italic; color:var(--ink-lt);">
-            Note: The family member must sign in using this email address. They will be asked to set a password on first sign-in via the "Forgot Password" flow, or you can share a temporary password with them directly through Firebase Console.
-          </p>
-        </div>
-      </div>
-    </div>
-
-  </main>
+<div id="auth-guard" class="guard">
+  <div class="guard-inner">
+    <span class="script">Macabuhay</span>
+    <div class="spinner" aria-hidden="true"></div>
+    <span class="muted">Verifying admin access…</span>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="admin-ui">
+  <div class="admin">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="script">Macabuhay</span>
+        <span class="label">Admin dashboard</span>
+      </div>
+      <nav aria-label="Admin sections">
+        <button class="nav-item active" type="button" onclick="showTab('tab-overview', this)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>Overview</button>
+        <button class="nav-item" type="button" onclick="showTab('tab-pending', this)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>Requests <span id="pending-badge" class="nav-badge">0</span></button>
+        <button class="nav-item" type="button" onclick="showTab('tab-members', this)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.5" cy="7" r="3"/><path d="M2 17c.6-3 2.8-4.5 5.5-4.5S12.4 14 13 17"/><circle cx="14" cy="6" r="2.4"/><path d="M14.5 11c2 .2 3.2 1.6 3.5 4"/></svg>Members</button>
+        <button class="nav-item" type="button" onclick="showTab('tab-add', this)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 7v6M7 10h6"/></svg>Add member</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div id="admin-avatar" class="sidebar-avatar">A</div>
+          <div>
+            <div id="admin-name"></div>
+            <div class="role">Administrator</div>
+          </div>
+        </div>
+        <button class="btn btn--secondary btn--on-dark btn-signout-sm" type="button" onclick="doSignOut()">Sign out</button>
+        <div class="sidebar-links"><a href="family.html">Family portal</a><a href="index.html">Public site</a></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="tab-overview" class="tab-view active">
+        <div class="page-header">
+          <span class="label label--gold">Overview</span>
+          <h1 class="page-title">Good to see you, <em id="admin-first">Admin</em></h1>
+          <p class="page-subtitle">Manage your family’s access and site content from here.</p>
+        </div>
+        <div class="stats">
+          <div class="stat-card stat-card--accent"><div id="stat-members" class="stat-num">—</div><div class="stat-label">Family members</div></div>
+          <div class="stat-card"><div id="stat-pending" class="stat-num">—</div><div class="stat-label">Pending requests</div></div>
+          <div class="stat-card"><div id="stat-denied" class="stat-num">—</div><div class="stat-label">Denied</div></div>
+          <div class="stat-card"><div id="stat-total" class="stat-num">—</div><div class="stat-label">Total users</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Pending requests</div></div>
+          <div id="overview-pending" class="panel-body"></div>
+        </div>
+      </div>
+
+      <div id="tab-pending" class="tab-view">
+        <div class="page-header">
+          <span class="label label--gold">Access</span>
+          <h1 class="page-title">Pending <em>requests</em></h1>
+          <p class="page-subtitle">Review and approve or deny access requests from family members.</p>
+        </div>
+        <div class="panel"><div id="pending-list" class="panel-body"></div></div>
+      </div>
+
+      <div id="tab-members" class="tab-view">
+        <div class="page-header">
+          <span class="label label--gold">People</span>
+          <h1 class="page-title">Family <em>members</em></h1>
+          <p class="page-subtitle">All approved family members with access to the private site.</p>
+        </div>
+        <div class="panel"><div id="members-list" class="panel-body"></div></div>
+      </div>
+
+      <div id="tab-add" class="tab-view">
+        <div class="page-header">
+          <span class="label label--gold">Invite</span>
+          <h1 class="page-title">Add a <em>member</em></h1>
+          <p class="page-subtitle">Add a family member by email address and set their role.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Create account</div></div>
+          <div class="add-form">
+            <div class="field">
+              <label for="new-email">Email address</label>
+              <input class="input" type="email" id="new-email" placeholder="family@example.com" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="new-role">Role</label>
+              <select class="select" id="new-role">
+                <option value="member">Family member</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button class="btn btn--primary" type="button" onclick="addMemberByEmail()">Add member</button>
+          </div>
+          <p class="add-note">The family member must sign in with this email address. They can set a password with “Forgot password?” on the login page, or you can share a temporary password through the Firebase console.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -382,6 +246,8 @@
 
   let allUsers = [];
 
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
@@ -393,6 +259,7 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
+    window.scrollTo({ top: 0 });
   };
 
   function formatDate(ts) {
@@ -404,23 +271,24 @@
   function userRowHTML(u, showActions) {
     const initials = (u.displayName || u.email || '?').charAt(0).toUpperCase();
     const avatar = u.photoURL
-      ? `<div class="user-av"><img src="${u.photoURL}"></div>`
-      : `<div class="user-av">${initials}</div>`;
+      ? `<div class="user-av"><img src="${esc(u.photoURL)}" alt=""></div>`
+      : `<div class="user-av">${esc(initials)}</div>`;
+    const uid = esc(u.uid);
 
     let actions = '';
     if (showActions === 'pending') {
       actions = `
         <div class="action-btns">
-          <button class="btn-approve" onclick="window.updateRole('${u.uid}','member')">Approve</button>
-          <button class="btn-deny" onclick="window.updateRole('${u.uid}','denied')">Deny</button>
+          <button class="btn-approve" onclick="window.updateRole('${uid}','member')">Approve</button>
+          <button class="btn-deny" onclick="window.updateRole('${uid}','denied')">Deny</button>
         </div>`;
     } else if (showActions === 'member') {
       actions = `
         <div class="action-btns">
-          <button class="btn-revoke" onclick="window.updateRole('${u.uid}','denied')">Revoke</button>
+          <button class="btn-revoke" onclick="window.updateRole('${uid}','denied')">Revoke</button>
         </div>`;
     } else {
-      actions = `<span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--ink-lt);letter-spacing:0.1em;">Administrator</span>`;
+      actions = `<span class="role-note">Administrator</span>`;
     }
 
     const roleBadge = {
@@ -435,8 +303,8 @@
         <div class="user-info">
           ${avatar}
           <div>
-            <div class="user-name">${u.displayName || u.email.split('@')[0]}</div>
-            <div class="user-email">${u.email}</div>
+            <div class="user-name">${esc(u.displayName || (u.email || '').split('@')[0])}</div>
+            <div class="user-email">${esc(u.email)}</div>
           </div>
         </div>
         <div>${roleBadge}</div>
@@ -459,13 +327,15 @@
     document.getElementById('stat-pending').textContent = pending.length;
     document.getElementById('stat-denied').textContent = denied.length;
     document.getElementById('stat-total').textContent = allUsers.length;
-    document.getElementById('pending-badge').textContent = pending.length;
+    const badge = document.getElementById('pending-badge');
+    badge.textContent = pending.length;
+    badge.style.display = pending.length ? '' : 'none';
 
     // Overview pending
     const opEl = document.getElementById('overview-pending');
     opEl.innerHTML = pending.length
       ? pending.map(u => userRowHTML(u, 'pending')).join('')
-      : '<div class="empty-state">No pending requests — you\'re all caught up.</div>';
+      : '<div class="empty-state">No pending requests — you’re all caught up.</div>';
 
     // Pending tab
     const plEl = document.getElementById('pending-list');
@@ -540,7 +410,7 @@
     document.getElementById('admin-first').textContent = name.split(' ')[0];
 
     const av = document.getElementById('admin-avatar');
-    if (user.photoURL) av.innerHTML = `<img src="${user.photoURL}">`;
+    if (user.photoURL) av.innerHTML = `<img src="${esc(user.photoURL)}" alt="">`;
     else av.textContent = name.charAt(0).toUpperCase();
 
     await loadUsers();
