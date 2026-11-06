@@ -218,82 +218,41 @@
   </footer>
 </main>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+  // Azure Static Web Apps only serves this page to the member and admin roles (staticwebapp.config.json).
+  (function () {
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDFm6zKz-GFfwN2ctWoEsCjTpir7B22scI",
-    authDomain: "www.themacabuhay.com",
-    projectId: "macabuhay-website",
-    storageBucket: "macabuhay-website.firebasestorage.app",
-    messagingSenderId: "464926995204",
-    appId: "1:464926995204:web:a3f4c16900fa77edee9651"
-  };
+    window.signOut = function () { location.href = '/.auth/logout?post_logout_redirect_uri=/index.html'; };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    (async () => {
+      const r = await fetch('/api/me', { cache: 'no-store' });
+      if (!r.ok) { location.href = 'login.html'; return; }
+      const me = await r.json();
+      if (me.role !== 'member' && me.role !== 'admin') { location.href = 'login.html'; return; }
 
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      document.getElementById('auth-guard').style.display = 'none';
+      document.getElementById('main-nav').style.display = 'block';
+      document.getElementById('main-content').style.display = 'block';
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = 'login.html'; return; }
+      const name = me.name || me.email.split('@')[0];
+      document.getElementById('user-name').textContent = name;
+      document.getElementById('hero-welcome').textContent = `Welcome back, ${name.split(' ')[0]}. This is our family’s private corner — photos, people and the dates that bring us together.`;
+      document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) { window.location.href = 'login.html'; return; }
-
-    const data = snap.data();
-    if (data.role !== 'member' && data.role !== 'admin') {
-      window.location.href = 'login.html'; return;
-    }
-
-    // Show content
-    document.getElementById('auth-guard').style.display = 'none';
-    document.getElementById('main-nav').style.display = 'block';
-    document.getElementById('main-content').style.display = 'block';
-
-    // Set user info in nav
-    const name = user.displayName || user.email.split('@')[0];
-    document.getElementById('user-name').textContent = name;
-    document.getElementById('hero-welcome').textContent = `Welcome back, ${name.split(' ')[0]}. This is our family’s private corner — photos, people and the dates that bring us together.`;
-
-    const avatarEl = document.getElementById('user-avatar');
-    if (user.photoURL) {
-      avatarEl.innerHTML = `<img src="${esc(user.photoURL)}" alt="${esc(name)}">`;
-    } else {
-      avatarEl.textContent = name.charAt(0).toUpperCase();
-    }
-
-    // Load family members
-    try {
-      const q = query(collection(db, 'users'), where('role', 'in', ['member', 'admin']));
-      const members = await getDocs(q);
-      const grid = document.getElementById('members-grid');
-      let html = '';
-      members.forEach(m => {
-        const d = m.data();
-        const display = d.displayName || (d.email || '').split('@')[0];
-        const initials = (d.displayName || d.email || '?').charAt(0).toUpperCase();
-        const avatar = d.photoURL
-          ? `<div class="member-avatar"><img src="${esc(d.photoURL)}" alt="${esc(display)}"></div>`
-          : `<div class="member-avatar">${esc(initials)}</div>`;
-        html += `
+      try {
+        const res = await fetch('/api/family/members', { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.status);
+        const list = await res.json();
+        document.getElementById('members-grid').innerHTML = list.map(m => `
           <div class="member-card">
-            ${avatar}
-            <div class="member-name">${esc(display)}</div>
-            <div class="member-role">${d.role === 'admin' ? 'Admin' : 'Family member'}</div>
-          </div>`;
-      });
-      grid.innerHTML = html;
-    } catch(e) { console.log('Could not load members', e); }
-  });
-
-  window.signOut = async function() {
-    await fbSignOut(auth);
-    window.location.href = 'index.html';
-  };
+            <div class="member-avatar">${esc(m.name.charAt(0).toUpperCase())}</div>
+            <div class="member-name">${esc(m.name)}</div>
+            <div class="member-role">${m.role === 'admin' ? 'Admin' : 'Family member'}</div>
+          </div>`).join('');
+      } catch (e) { console.log('Could not load members', e); }
+    })();
+  })();
 </script>
 </body>
 </html>

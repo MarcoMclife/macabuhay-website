@@ -80,7 +80,8 @@ function memoryStore(seed = []) {
 
 let shared;
 function defaultStore() {
-  if (!shared) shared = tableStore();
+  // MEMBERS_STORE=memory is for the local dev server only (tools/dev-server.mjs)
+  if (!shared) shared = process.env.MEMBERS_STORE === 'memory' ? memoryStore() : tableStore();
   return shared;
 }
 

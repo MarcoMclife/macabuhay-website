@@ -30,8 +30,11 @@ function guarded(requiredRole, handler) {
   };
 }
 
+const routes = [];
+const register = (name, def) => { routes.push({ name, ...def }); app.http(name, def); };
+
 // Static Web Apps calls this at every sign-in to decide the user's roles.
-app.http('GetRoles', {
+register('GetRoles', {
   methods: ['POST'],
   authLevel: 'anonymous',
   route: 'GetRoles',
@@ -48,7 +51,7 @@ app.http('GetRoles', {
   },
 });
 
-app.http('me', {
+register('me', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'me',
@@ -66,21 +69,21 @@ app.http('me', {
   }),
 });
 
-app.http('familyMembers', {
+register('familyMembers', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'family/members',
   handler: guarded('member', async (_req, _user, store) => json(200, await members.familyList(store))),
 });
 
-app.http('adminMembersList', {
+register('adminMembersList', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'admin/members',
   handler: guarded('admin', async (_req, _user, store) => json(200, await members.adminList(store))),
 });
 
-app.http('adminMembersAdd', {
+register('adminMembersAdd', {
   methods: ['POST'],
   authLevel: 'anonymous',
   route: 'admin/members/add',
@@ -90,7 +93,7 @@ app.http('adminMembersAdd', {
   }),
 });
 
-app.http('adminMembersSetRole', {
+register('adminMembersSetRole', {
   methods: ['POST'],
   authLevel: 'anonymous',
   route: 'admin/members/role',
@@ -99,3 +102,5 @@ app.http('adminMembersSetRole', {
     return json(200, await members.setRole(store, user.email, body.email, body.role));
   }),
 });
+
+module.exports = { routes };
